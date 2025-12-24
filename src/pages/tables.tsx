@@ -3,11 +3,12 @@ import TablePicker from "../components/TablePicker";
 import Layout from "../components/Layout";
 
 const tables = [
-  { name: "Users", rows: 120, href: "/tables/users" },
-  { name: "Orders", rows: 58, href: "/tables/orders" },
-  { name: "Products", rows: 34, href: "/tables/products" },
-  { name: "Invoices", rows: 12, href: "/tables/invoices" },
-  { name: "Customers", rows: 85, href: "/tables/customers" },
+  // { name: "Users", rows: 120, href: "/tables/users" },
+  { name: "Tasks", rows: 58, href: "/tables/tasks" },
+  // { name: "Orders", rows: 58, href: "/tables/orders" },
+  // { name: "Products", rows: 34, href: "/tables/products" },
+  // { name: "Invoices", rows: 12, href: "/tables/invoices" },
+  // { name: "Customers", rows: 85, href: "/tables/customers" },
 ];
 
 export default function Tables() {

@@ -17,14 +17,14 @@ const Sidebar = () => {
       {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/30 z-40 md:hidden"
+          className="fixed inset-0 z-40 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       <div
         className={`
-          fixed left-0 top-0 h-full bg-white border-r border-gray-200 shadow-md z-50
+          fixed left-0 top-0 h-full border-r border-gray-200 shadow-md z-50
           w-64 transform md:translate-x-0 transition-transform duration-300
           ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
         `}
