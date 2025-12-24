@@ -34,8 +34,10 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
-, "public/temptabledata.ts", "src/components/tables/StatusCell.tsx"  ],
+    "**/*.mts",
+    "public/temptabledata.ts",
+    "src/components/tables/StatusCell.tsx"
+  ],
   "exclude": [
     "node_modules"
   ]

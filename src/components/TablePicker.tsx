@@ -2,6 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { Plus, Table as TableIcon } from "lucide-react";
+import { Box, Flex, Input, Button, Text, Link as ChakraLink, Icon, VStack } from "@chakra-ui/react";
 
 interface TablePickerProps {
   tables: { name: string; rows?: number; href: string }[];
@@ -10,45 +11,80 @@ interface TablePickerProps {
 
 const TablePicker: React.FC<TablePickerProps> = ({ tables, onCreate }) => {
   return (
-    <div className="w-full max-w-[800px] bg-gray-50 border border-gray-200 rounded-xl shadow-md overflow-hidden">
+    <Box
+      w="full"
+      maxW="800px"
+      bg="bg.card"
+      border="1px solid"
+      borderColor="border.subtle"
+      borderRadius="xl"
+      boxShadow="sm"
+      overflow="hidden"
+    >
       {/* Header with Search & New Table */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
-        <input
-          type="text"
+      <Flex
+        align="center"
+        justify="space-between"
+        p="4"
+        borderBottom="1px solid"
+        borderColor="border.subtle"
+        bg="bg.sidebar"
+      >
+        <Input
           placeholder="Search tables..."
-          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition"
+          size="sm"
+          borderRadius="md"
+          variant="filled"
+          bg="bg.muted"
+          _focus={{ bg: "bg.card", borderColor: "accent.primary" }}
         />
-        <button
+        <Button
           onClick={onCreate}
-          className="ml-3 flex items-center gap-1 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-900 transition"
+          ml="3"
+          leftIcon={<Plus size={16} />}
+          colorScheme="blue"
+          size="sm"
+          px="4"
         >
-          <Plus size={16} />
           New Table
-        </button>
-      </div>
+        </Button>
+      </Flex>
 
       {/* Table list */}
-      <div className="max-h-72 overflow-y-auto">
+      <VStack spacing="0" align="stretch" maxH="72" overflowY="auto">
         {tables.length === 0 && (
-          <p className="p-4 text-gray-400 text-sm text-center">No tables available</p>
+          <Text p="4" color="text.secondary" fontSize="sm" textAlign="center">
+            No tables available
+          </Text>
         )}
         {tables.map((table) => (
-          <Link
+          <ChakraLink
+            as={Link}
             key={table.name}
             href={table.href}
-            className="flex items-center px-4 py-3 gap-3 cursor-pointer transition rounded-r-lg hover:bg-gray-100"
+            display="flex"
+            alignItems="center"
+            px="4"
+            py="3"
+            gap="3"
+            transition="all 0.2s"
+            _hover={{ bg: "bg.hover", textDecoration: "none" }}
           >
-            <TableIcon size={18} className="text-gray-600" />
-            <div className="flex-1">
-              <div className="text-sm font-medium text-gray-800">{table.name}</div>
+            <Icon as={TableIcon} size={18} color="text.secondary" />
+            <Box flex="1">
+              <Text fontSize="sm" fontWeight="medium" color="text.primary">
+                {table.name}
+              </Text>
               {table.rows !== undefined && (
-                <div className="text-xs text-gray-500">{table.rows} rows</div>
+                <Text fontSize="xs" color="text.secondary">
+                  {table.rows} rows
+                </Text>
               )}
-            </div>
-          </Link>
+            </Box>
+          </ChakraLink>
         ))}
-      </div>
-    </div>
+      </VStack>
+    </Box>
   );
 };
 

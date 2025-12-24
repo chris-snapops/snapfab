@@ -1,3 +1,4 @@
+import { Box, Flex } from "@chakra-ui/react";
 import Sidebar from "./Sidebar";
 
 interface LayoutProps {
@@ -6,12 +7,12 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="flex min-h-screen">
+    <Flex minH="100vh">
       <Sidebar />
-      <main className="flex-1 ml-0 md:ml-64 bg-gray-50 p-6">
+      <Box as="main" flex="1" ml={{ base: 0, md: "64" }} bg="bg.app" p="6">
         {children}
-      </main>
-    </div>
+      </Box>
+    </Flex>
   );
 };
 

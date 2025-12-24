@@ -1,9 +1,11 @@
-import { useState } from "react";
 import Link from "next/link";
-import { Menu } from "lucide-react"; // Hamburger icon
+import { Box, Flex, Link as ChakraLink, VStack, IconButton, useDisclosure, Text, CloseButton } from "@chakra-ui/react";
+import { Menu } from "lucide-react";
+import { useRouter } from "next/router";
 
 const Sidebar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const router = useRouter();
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -16,49 +18,90 @@ const Sidebar = () => {
     <>
       {/* Mobile overlay */}
       {isOpen && (
-        <div
-          className="fixed inset-0 z-40 md:hidden"
-          onClick={() => setIsOpen(false)}
+        <Box
+          position="fixed"
+          inset="0"
+          zIndex="40"
+          display={{ base: "block", md: "none" }}
+          onClick={onClose}
+          bg="blackAlpha.600"
         />
       )}
 
-      <div
-        className={`
-          fixed left-0 top-0 h-full border-r border-gray-200 shadow-md z-50
-          w-64 transform md:translate-x-0 transition-transform duration-300
-          ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-        `}
+      <Box
+        position="fixed"
+        left="0"
+        top="0"
+        h="full"
+        zIndex="50"
+        w="64"
+        transition="transform 0.3s"
+        transform={{
+          base: isOpen ? "translateX(0)" : "translateX(-100%)",
+          md: "translateX(0)",
+        }}
+        bg="bg.sidebar"
+        borderRight="1px solid"
+        borderColor="border.subtle"
       >
-        <div className="flex items-center justify-between px-4 h-16 border-b border-gray-200">
-          <span className="text-xl font-bold"><Link href="/">SnapFab</Link></span>
-          <button
-            className="md:hidden p-2 rounded hover:bg-gray-100"
-            onClick={() => setIsOpen(false)}
-          >
-            ✕
-          </button>
-        </div>
+        <Flex
+          align="center"
+          justify="space-between"
+          px="4"
+          h="16"
+          borderBottom="1px solid"
+          borderColor="border.subtle"
+        >
+          <Text fontSize="xl" fontWeight="bold" color="text.primary">
+            <ChakraLink as={Link} href="/" _hover={{ textDecoration: "none" }}>
+              SnapFab
+            </ChakraLink>
+          </Text>
+          <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
+        </Flex>
 
-        <nav className="mt-4 flex flex-col gap-1 px-2">
-          {navItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className="block px-4 py-2 rounded hover:bg-gray-100 transition"
-            >
-              {item.name}
-            </Link>
-          ))}
-        </nav>
-      </div>
+        <VStack as="nav" mt="4" spacing="1" px="2" align="stretch">
+          {navItems.map((item) => {
+            const isActive = router.pathname === item.href;
+            return (
+              <ChakraLink
+                key={item.href}
+                as={Link}
+                href={item.href}
+                display="block"
+                px="4"
+                py="2"
+                rounded="md"
+                bg={isActive ? "bg.active" : "transparent"}
+                color={isActive ? "accent.primary" : "text.secondary"}
+                fontWeight={isActive ? "semibold" : "medium"}
+                _hover={{ bg: "bg.hover", color: isActive ? "accent.primary" : "text.primary" }}
+                transition="all 0.2s"
+                onClick={onClose}
+              >
+                {item.name}
+              </ChakraLink>
+            );
+          })}
+        </VStack>
+      </Box>
 
       {/* Hamburger button for mobile */}
-      <button
-        className="fixed top-4 left-4 md:hidden z-50 p-2 rounded bg-white shadow"
-        onClick={() => setIsOpen(true)}
-      >
-        <Menu size={24} />
-      </button>
+      {!isOpen && (
+        <IconButton
+          aria-label="Open menu"
+          icon={<Menu size={20} />}
+          position="fixed"
+          top="4"
+          left="4"
+          display={{ base: "flex", md: "none" }}
+          zIndex="50"
+          variant="outline"
+          bg="bg.sidebar"
+          borderColor="border.subtle"
+          onClick={onOpen}
+        />
+      )}
     </>
   );
 };

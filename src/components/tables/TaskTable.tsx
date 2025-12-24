@@ -39,34 +39,34 @@ const TaskTable = () => {
     columnResizeMode: "onChange",
   });
   return (
-    <Box>
-      <Box className="table" w={table.getTotalSize()}>
-        {table.getHeaderGroups().map(headerGroup => <Box className="tr" key={headerGroup.id}>
-          {headerGroup.headers.map(
-            header => <Box className="th" w={header.getSize()} key={headerGroup.id}>
-              {header.column.columnDef.header instanceof Function
-                ? header.column.columnDef.header(header.getContext())
-                : header.column.columnDef.header
-              }
-              <Box
-                onMouseDown={header.getResizeHandler()}
-                onTouchStart={header.getResizeHandler()}
-                className={
-                  `resizer ${header.column.getIsResizing() ? "isResizing" : ""}`
-                } />
-            </Box>
-          )}
-        </Box>)}
-        {
-          table.getRowModel().rows.map(row => <Box className="tr" key={row.id}>
-            {row.getVisibleCells().map(cell => <Box className="td" w={cell.column.getSize()} key={cell.id}>
-              {flexRender(
-                cell.column.columnDef.cell,
-                cell.getContext()
-              )}
-            </Box>)}
-          </Box>)
-        }
+    <Box overflowX="auto" pb={4}>
+      <Box className="tanstack-table" w={table.getTotalSize()}>
+        {table.getHeaderGroups().map(headerGroup => (
+          <Box className="tanstack-tr" key={headerGroup.id}>
+            {headerGroup.headers.map(header => (
+              <Box className="tanstack-th" w={header.getSize()} key={header.id} position="relative">
+                {header.column.columnDef.header instanceof Function
+                  ? header.column.columnDef.header(header.getContext())
+                  : header.column.columnDef.header
+                }
+                <Box
+                  onMouseDown={header.getResizeHandler()}
+                  onTouchStart={header.getResizeHandler()}
+                  className={`resizer ${header.column.getIsResizing() ? "isResizing" : ""}`}
+                />
+              </Box>
+            ))}
+          </Box>
+        ))}
+        {table.getRowModel().rows.map(row => (
+          <Box className="tanstack-tr" key={row.id}>
+            {row.getVisibleCells().map(cell => (
+              <Box className="tanstack-td" w={cell.column.getSize()} key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </Box>
+            ))}
+          </Box>
+        ))}
       </Box>
     </Box>
   );

@@ -1,0 +1,101 @@
+
+export const tableStyles = {
+  container: {
+    border: "1px solid",
+    borderColor: "border.table",
+    borderRadius: "lg",
+    overflow: "hidden",
+    bg: "bg.card",
+  },
+  header: {
+    bg: "bg.muted",
+    color: "text.secondary",
+    fontWeight: "600",
+    fontSize: "xs",
+    textTransform: "uppercase",
+    letterSpacing: "wider",
+    borderBottom: "1px solid",
+    borderColor: "border.table",
+  },
+  row: {
+    _hover: { bg: "bg.hover" },
+    borderBottom: "1px solid",
+    borderColor: "border.subtle",
+  },
+  cell: {
+    px: "4",
+    py: "3",
+    fontSize: "sm",
+    color: "text.primary",
+  },
+  resizer: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    h: "full",
+    w: "4px",
+    bg: "blue.500",
+    cursor: "col-resize",
+    userSelect: "none",
+    touchAction: "none",
+    opacity: 0,
+    transition: "opacity 0.2s",
+    _hover: { opacity: 1 },
+    "&.isResizing": { opacity: 1, bg: "blue.600" },
+  }
+};
+
+export const tanstackTableStyles = {
+  ".tanstack-table": {
+    border: "1px solid",
+    borderColor: "border.table",
+    bg: "bg.card",
+    borderRadius: "md",
+    overflow: "hidden",
+  },
+  ".tanstack-tr": {
+    display: "flex",
+    width: "fit-content",
+    borderBottom: "1px solid",
+    borderColor: "border.subtle",
+    _hover: { bg: "bg.hover" },
+  },
+  ".tanstack-th": {
+    bg: "bg.muted",
+    color: "text.secondary",
+    fontWeight: "semibold",
+    fontSize: "xs",
+    textTransform: "uppercase",
+    p: 2,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRight: "1px solid",
+    borderColor: "border.table",
+  },
+  ".tanstack-td": {
+    p: 2,
+    borderRight: "1px solid",
+    borderColor: "border.subtle",
+  },
+  ".resizer": {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    h: "full",
+    w: "4px",
+    bg: "accent.primary",
+    cursor: "col-resize",
+    userSelect: "none",
+    touchAction: "none",
+    opacity: 0,
+    transition: "opacity 0.2s",
+  },
+  "*:hover > .resizer": {
+    opacity: 1,
+  },
+  ".resizer.isResizing": {
+    bg: "green.400",
+    opacity: 1,
+  },
+};
