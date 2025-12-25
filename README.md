@@ -1,7 +1,7 @@
 # SnapFab
 SnapFab is a web-based manufacturing optimization system designed to help manufacturers plan production, manage inventory, and optimize workflows. It provides a centralized platform to manage products, ingredients, machines, and locations efficiently.
 
-[End goal](https://docs.google.com/document/d/1-tlPo4pBpPV-AspNmSzo1AseV-8MO9dct7eIUCP4MiQ/edit?tab=t.0#heading=h.bzq9yb7uz90q)
+<a href="https://docs.google.com/document/d/1-tlPo4pBpPV-AspNmSzo1AseV-8MO9dct7eIUCP4MiQ/edit?tab=t.0#heading=h.bzq9yb7uz90q" target="_blank">End goal</a>
 
 ## Features
 - Multi-location Management – Track ingredients, products, and production across multiple sites.
