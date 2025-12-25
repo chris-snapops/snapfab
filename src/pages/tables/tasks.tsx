@@ -5,7 +5,7 @@ import Layout from "../../components/Layout";
 function App() {
   return (
     <Layout>
-      <Box maxW={1000} mx="auto" px={6} pt={24} fontSize="sm">
+      <Box>
         <Heading mb={10}>TanStack Table</Heading>
         <TaskTable />
       </Box>

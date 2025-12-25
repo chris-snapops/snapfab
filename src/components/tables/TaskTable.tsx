@@ -1,22 +1,24 @@
-// https://youtu.be/CjqG277Hmgg?t=940
+// https://youtu.be/CjqG277Hmgg?t=1674
 
 import { Box } from "@chakra-ui/react";
 import { buildHeaderGroups, getCoreRowModel, RowModel, Table, useReactTable, flexRender } from "@tanstack/react-table"
 import { Status } from "../../../public/temptabledata"
 import DATA from "../../../public/temptabledata"
 import { useState } from "react";
+import StringCell from "./StringCell";
+import EnumCell from "./EnumCell";
 
 const columns = [
   {
     accessorKey: 'task',
     header: 'Task',
     size: 200,
-    cell: (props: any) => <p>{props.getValue()}</p>
+    cell: StringCell
   },
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: (props: any) => <p>{props.getValue()?.name}</p>
+    cell: EnumCell
   },
   {
     accessorKey: 'due',
@@ -37,7 +39,20 @@ const TaskTable = () => {
     columns,
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: "onChange",
+    meta: {
+      updateData: (rowIndex: number, columnId: string, value: string) => setData(
+        prev => prev.map(
+          (row, index) =>
+            index === rowIndex
+              ? {
+                ...prev[rowIndex],
+                [columnId]: value,
+              } : row
+        )
+      )
+    }
   });
+  console.log(data);
   return (
     <Box overflowX="auto" pb={4}>
       <Box className="tanstack-table" w={table.getTotalSize()}>

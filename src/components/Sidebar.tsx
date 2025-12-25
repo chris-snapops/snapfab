@@ -34,7 +34,7 @@ const Sidebar = () => {
         top="0"
         h="full"
         zIndex="50"
-        w="64"
+        w="44"
         transition="transform 0.3s"
         transform={{
           base: isOpen ? "translateX(0)" : "translateX(-100%)",
