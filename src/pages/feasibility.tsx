@@ -4,7 +4,7 @@ import Layout from "../components/Layout";
 
 export default function Feasibility() {
   return (
-    <Layout>
+    <Layout title="Feasibility">
       <Heading mb="4">Feasibility</Heading>
       <Text>This page will contain the feasibility calculation stuff.</Text>
     </Layout>

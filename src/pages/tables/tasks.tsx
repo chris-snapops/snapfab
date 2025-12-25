@@ -4,7 +4,7 @@ import Layout from "../../components/Layout";
 
 function App() {
   return (
-    <Layout>
+    <Layout title="Tasks">
       <Box>
         <Heading mb={10}>TanStack Table</Heading>
         <TaskTable />

@@ -17,7 +17,7 @@ export default function Tables() {
   };
 
   return (
-    <Layout>
+    <Layout title="Tables">
       <div className="p-8 flex justify-center bg-gray-50 min-h-screen">
         <TablePicker tables={tables} onCreate={handleCreate} />
       </div>

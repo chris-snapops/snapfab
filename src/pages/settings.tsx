@@ -6,7 +6,7 @@ export default function Settings() {
   const { colorMode, toggleColorMode } = useColorMode();
 
   return (
-    <Layout>
+    <Layout title="Settings">
       <Box maxW="600px">
         <Heading mb={6} size="lg">Settings</Heading>
         
