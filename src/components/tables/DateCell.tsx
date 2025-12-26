@@ -1,6 +1,6 @@
 // https://mantine.dev/dates/date-input/
 
-import { Box, Input, useMantineTheme } from "@mantine/core";
+import { Input, useMantineTheme } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 
 const DateCell = ({ getValue, row, column, table }: any) => {
@@ -35,7 +35,6 @@ const DateCell = ({ getValue, row, column, table }: any) => {
         }
       />
     </>
-
   );
 };
 
