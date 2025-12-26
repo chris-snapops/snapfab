@@ -1,4 +1,4 @@
-import { Box, Text } from "@mantine/core";
+import { Box, Flex, Text } from "@mantine/core";
 import { getCoreRowModel, useReactTable, flexRender } from "@tanstack/react-table";
 import DATA from "../../../public/temptabledata";
 import { useState } from "react";
@@ -10,7 +10,7 @@ const columns = [
   {
     accessorKey: 'task',
     header: 'Task',
-    size: 200,
+    size: 200, 
     cell: StringCell
   },
   {
@@ -52,7 +52,11 @@ const TaskTable = () => {
   });
 
   return (
-    <Box style={{ overflowX: 'auto', border: '1px solid var(--mantine-color-gray-3)', borderRadius: 'var(--mantine-radius-md)' }} mb="md">
+    <Box 
+      style={{ overflowX: 'auto', borderRadius: 'var(--mantine-radius-md)' }}
+      bd="1px solid var(--mantine-color-default-border)"
+      mb="md"
+    >
       <style>{`
         .tanstack-tr {
           transition: background-color 0.1s ease;
@@ -60,50 +64,41 @@ const TaskTable = () => {
         .tanstack-tr:hover {
           background-color: var(--mantine-color-gray-0);
         }
+        [data-mantine-color-scheme='dark'] .tanstack-tr:hover {
+          background-color: var(--mantine-color-dark-6);
+        }
       `}</style>
-      <Box 
-        className="tanstack-table" 
-        style={{ 
-          width: table.getTotalSize(),
-          display: 'flex',
-          flexDirection: 'column',
-          backgroundColor: 'var(--mantine-color-body)',
-        }}
+      <Flex
+        className="tanstack-table"
+        w={table.getTotalSize()}
+        direction="column"
+        bg="var(--mantine-color-body)"
       >
         {table.getHeaderGroups().map(headerGroup => (
-          <Box 
-            className="tanstack-tr-header" 
-            key={headerGroup.id} 
-            style={{ 
-              display: 'flex',
-              backgroundColor: 'var(--mantine-color-gray-0)',
-              borderBottom: '1px solid var(--mantine-color-gray-3)'
-            }}
+          <Flex
+            className="tanstack-tr-header"
+            key={headerGroup.id}
+            bg="var(--mantine-color-body)"
+            style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
           >
             {headerGroup.headers.map(header => (
-              <Box
+              <Flex
                 className="tanstack-th"
                 key={header.id}
-                style={{
-                  width: header.getSize(),
-                  position: 'relative',
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '8px 12px',
-                  fontWeight: 700,
-                  fontSize: '12px',
-                  color: 'var(--mantine-color-gray-7)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  borderRight: '1px solid var(--mantine-color-gray-3)',
-                  height: '40px'
-                }}
+                w={header.getSize()}
+                pos="relative"
+                align="center"
+                px="12px"
+                py="8px"
+                fw={700}
+                fz={12}
+                c="var(--mantine-color-text)"
+                tt="uppercase"
+                style={{ letterSpacing: '0.05em', borderRight: '1px solid var(--mantine-color-default-border)' }}
+                h={40}
               >
-                {header.column.columnDef.header instanceof Function
-                  ? header.column.columnDef.header(header.getContext())
-                  : header.column.columnDef.header
-                }
-                <Box
+                {flexRender(header.column.columnDef.header, header.getContext())}
+                <div
                   onMouseDown={header.getResizeHandler()}
                   onTouchStart={header.getResizeHandler()}
                   className={`resizer ${header.column.getIsResizing() ? "isResizing" : ""}`}
@@ -112,47 +107,41 @@ const TaskTable = () => {
                     right: 0,
                     top: 0,
                     bottom: 0,
-                    width: '4px',
+                    width: 4,
                     cursor: 'col-resize',
                     userSelect: 'none',
                     touchAction: 'none',
                     zIndex: 1,
-                    backgroundColor: header.column.getIsResizing() ? 'var(--mantine-color-blue-filled)' : 'transparent',
+                    backgroundColor: header.column.getIsResizing() ? 'var(--mantine-color-blue-6)' : 'transparent',
                     opacity: header.column.getIsResizing() ? 1 : 0,
                   }}
                 />
-              </Box>
+              </Flex>
             ))}
-          </Box>
+          </Flex>
         ))}
         {table.getRowModel().rows.map(row => (
-          <Box 
+          <Flex 
             className="tanstack-tr" 
             key={row.id} 
-            style={{ 
-              display: 'flex',
-              borderBottom: '1px solid var(--mantine-color-gray-2)',
-            }}
+            style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
           >
             {row.getVisibleCells().map(cell => (
-              <Box
+              <Flex
                 className="tanstack-td"
                 key={cell.id}
-                style={{ 
-                  width: cell.column.getSize(),
-                  display: 'flex',
-                  alignItems: 'center',
-                  borderRight: '1px solid var(--mantine-color-gray-2)',
-                  minHeight: '40px',
-                  fontSize: '14px'
-                }}
+                w={cell.column.getSize()}
+                align="center"
+                style={{ borderRight: '1px solid var(--mantine-color-default-border)' }}
+                mih={40}
+                fz={14}
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </Box>
+              </Flex>
             ))}
-          </Box>
+          </Flex>
         ))}
-      </Box>
+      </Flex>
     </Box>
   );
 };

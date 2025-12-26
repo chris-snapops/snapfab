@@ -17,11 +17,9 @@ const EnumCell = ({ getValue, row, column, table }: any) => {
       <Menu shadow="md" width={200} position="bottom-start" withinPortal={false}>
         <Menu.Target>
           <Button
-            size="compact-sm"
             variant="light"
             color={color || "gray"}
             fullWidth
-            radius="xl"
             style={{ 
               fontWeight: 600,
               fontSize: '11px',
@@ -29,7 +27,7 @@ const EnumCell = ({ getValue, row, column, table }: any) => {
               letterSpacing: '0.5px'
             }}
           >
-            {name || "-"}
+            {name || ""}
           </Button>
         </Menu.Target>
 

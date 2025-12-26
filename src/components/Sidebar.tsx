@@ -19,7 +19,7 @@ const Sidebar = ({ closeMobileNav }: SidebarProps) => {
 
   return (
     <Box h="100%" p="md" display="flex" style={{ flexDirection: 'column' }}>
-      <Group h={60} px="md" mb="xl" visibleFrom="md">
+      <Group h={40} px="md" mb="xl" visibleFrom="md">
         <Link href="/" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Title order={3} fw={800} lts="-0.5px">SnapFab</Title>
         </Link>

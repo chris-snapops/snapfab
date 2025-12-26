@@ -18,7 +18,7 @@ const Layout = ({ children, title }: LayoutProps) => {
       </Head>
       <AppShell
         header={{ height: { base: 60, md: 0 } }}
-        navbar={{ width: 280, breakpoint: "md", collapsed: { mobile: !opened } }}
+        navbar={{ width: 200, breakpoint: "md", collapsed: { mobile: !opened } }}
         padding="xl"
       >
         <AppShell.Header hiddenFrom="md">
