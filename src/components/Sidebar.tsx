@@ -46,7 +46,7 @@ const Sidebar = ({ closeMobileNav }: SidebarProps) => {
       </Stack>
       
       <Box pt="md" style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}>
-        <Text size="xs" c="dimmed" ta="center">© 2025 SnapFab v2.0</Text>
+        <Text size="xs" c="dimmed" ta="center">© 2025 SnapFab v1.1</Text>
       </Box>
     </Box>
   );

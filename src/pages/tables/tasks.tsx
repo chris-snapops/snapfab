@@ -6,7 +6,7 @@ function App() {
   return (
     <Layout title="Tasks">
       <Box>
-        <Title order={1} mb="xl">TanStack Table</Title>
+        <Title order={1} mb="xl">Tasks</Title>
         <TaskTable />
       </Box>
     </Layout>

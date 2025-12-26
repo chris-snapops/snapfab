@@ -10,37 +10,16 @@ interface LayoutProps {
 
 const Layout = ({ children, title }: LayoutProps) => {
   const [opened, { toggle, close }] = useDisclosure();
-  const fullTitle = title ? `SnapFab | ${title}` : "SnapFab";
 
   return (
     <>
       <Head>
-        <title>{fullTitle}</title>
+        <title>{title ? `SnapFab | ${title}` : "SnapFab"}</title>
       </Head>
       <AppShell
         header={{ height: { base: 60, md: 0 } }}
-        navbar={{
-          width: 280,
-          breakpoint: "md",
-          collapsed: { mobile: !opened },
-        }}
+        navbar={{ width: 280, breakpoint: "md", collapsed: { mobile: !opened } }}
         padding="xl"
-        styles={(theme) => ({
-          main: {
-            backgroundColor: 'var(--mantine-color-body)',
-            minHeight: '100vh',
-          },
-          navbar: {
-            backdropFilter: 'blur(10px)',
-            backgroundColor: 'rgba(var(--mantine-color-body-rgb), 0.8)',
-            borderRight: '1px solid var(--mantine-color-default-border)',
-          },
-          header: {
-            backdropFilter: 'blur(10px)',
-            backgroundColor: 'rgba(var(--mantine-color-body-rgb), 0.8)',
-            borderBottom: '1px solid var(--mantine-color-default-border)',
-          },
-        })}
       >
         <AppShell.Header hiddenFrom="md">
           <Group h="100%" px="md">

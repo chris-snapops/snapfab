@@ -82,6 +82,24 @@ export const getTheme = (primaryColor: string): MantineThemeOverride => {
       xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
     },
     components: {
+      AppShell: {
+        styles: {
+          main: {
+            backgroundColor: 'var(--mantine-color-body)',
+            minHeight: '100vh',
+          },
+          navbar: {
+            backdropFilter: 'blur(10px)',
+            backgroundColor: 'rgba(var(--mantine-color-body-rgb), 0.8)',
+            borderRight: '1px solid var(--mantine-color-default-border)',
+          },
+          header: {
+            backdropFilter: 'blur(10px)',
+            backgroundColor: 'rgba(var(--mantine-color-body-rgb), 0.8)',
+            borderBottom: '1px solid var(--mantine-color-default-border)',
+          },
+        },
+      },
       Button: {
         defaultProps: {
           fw: 500,

@@ -20,13 +20,23 @@ const StringCell = ({ getValue, row, column, table }: any) => {
       onBlur={onBlur}
       variant="unstyled"
       size="sm"
+      w="100%"
       styles={{
+        root: {
+          width: '100%',
+        },
         input: {
-          padding: '0 8px',
-          height: '100%',
+          padding: '8px 12px',
+          height: '40px',
+          width: '100%',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
+          borderRadius: 0,
+          '&:focus': {
+            outline: '2px solid var(--mantine-color-blue-filled)',
+            zIndex: 1
+          }
         }
       }}
     />
