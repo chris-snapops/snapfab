@@ -1,52 +1,56 @@
-import { Menu, MenuButton, MenuList, MenuItem, Box, BoxProps } from "@chakra-ui/react"
-import { STATUSES, Status } from "../../../public/temptabledata"
+import { Menu, Button, UnstyledButton, Group, Text, Box } from "@mantine/core";
+import { STATUSES, Status } from "../../../public/temptabledata";
 
-interface ColorIconProps extends BoxProps {
-  color?: string
+interface ColorIconProps {
+  color?: string;
 }
 
-const ColorIcon = ({ color, ...props }: ColorIconProps) =>
-  <Box w="12px" h="12px" bg={color} borderRadius="3px" {...props} />
-
+const ColorIcon = ({ color }: ColorIconProps) =>
+  <Box w={12} h={12} bg={color} style={{ borderRadius: '3px' }} />;
 
 const EnumCell = ({ getValue, row, column, table }: any) => {
   const { name, color } = (getValue() as Status) || {};
   const { updateData } = table.options.meta || {};
 
   return (
-    <Menu
-      isLazy
-      offset={[0, 0]}
-      flip={false}
-      autoSelect={false}
-    >
-      <MenuButton
-        h="100%"
-        w="100%"
-        textAlign="left"
-        p={1.5}
-        bg={color}
-      >
-        {name}
-      </MenuButton>
-      <MenuList>
-        <MenuItem
-          onClick={() => updateData(row.index, column.id, null)}
+    <Menu shadow="md" width={200} position="bottom-start" withinPortal={false}>
+      <Menu.Target>
+        <UnstyledButton
+          h="100%"
+          w="100%"
+          p={8}
+          bg={color}
+          style={{ 
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            fontSize: 'var(--mantine-font-size-sm)',
+            textAlign: 'left'
+          }}
         >
-          <ColorIcon color={"gray.400"} mr={3} />
-          None
-        </MenuItem>
-        {STATUSES.map(status =>
-          <MenuItem
-            onClick={() => updateData(row.index, column.id, status)}
-            key={status.id}
-          >
-            <ColorIcon color={status.color} mr={3} />
-            {status.name}
-          </MenuItem>)}
-      </MenuList>
-    </Menu>
-  )
-}
+          {name}
+        </UnstyledButton>
+      </Menu.Target>
 
-export default EnumCell
+      <Menu.Dropdown>
+        <Menu.Item
+          onClick={() => updateData(row.index, column.id, null)}
+          leftSection={<ColorIcon color="var(--mantine-color-gray-4)" />}
+        >
+          None
+        </Menu.Item>
+        {STATUSES.map(status => (
+          <Menu.Item
+            key={status.id}
+            onClick={() => updateData(row.index, column.id, status)}
+            leftSection={<ColorIcon color={status.color} />}
+          >
+            {status.name}
+          </Menu.Item>
+        ))}
+      </Menu.Dropdown>
+    </Menu>
+  );
+};
+
+export default EnumCell;

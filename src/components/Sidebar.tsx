@@ -1,108 +1,54 @@
 import Link from "next/link";
-import { Box, Flex, Link as ChakraLink, VStack, IconButton, useDisclosure, Text, CloseButton } from "@chakra-ui/react";
-import { Menu } from "lucide-react";
 import { useRouter } from "next/router";
+import { NavLink, Text, Box, Stack, Group, Title, ThemeIcon } from "@mantine/core";
+import { Home, Table, BarChart2, Settings } from "lucide-react";
 
-const Sidebar = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+interface SidebarProps {
+  closeMobileNav: () => void;
+}
+
+const Sidebar = ({ closeMobileNav }: SidebarProps) => {
   const router = useRouter();
 
   const navItems = [
-    { name: "Home", href: "/" },
-    { name: "Tables", href: "/tables" },
-    { name: "Feasibility", href: "/feasibility" },
-    { name: "Settings", href: "/settings" },
+    { name: "Home", href: "/", icon: <Home size={20} strokeWidth={1.5} /> },
+    { name: "Tables", href: "/tables", icon: <Table size={20} strokeWidth={1.5} /> },
+    { name: "Feasibility", href: "/feasibility", icon: <BarChart2 size={20} strokeWidth={1.5} /> },
+    { name: "Settings", href: "/settings", icon: <Settings size={20} strokeWidth={1.5} /> },
   ];
 
   return (
-    <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <Box
-          position="fixed"
-          inset="0"
-          zIndex="40"
-          display={{ base: "block", md: "none" }}
-          onClick={onClose}
-          bg="blackAlpha.600"
-        />
-      )}
+    <Box h="100%" p="md" display="flex" style={{ flexDirection: 'column' }}>
+      <Group h={60} px="md" mb="xl" visibleFrom="md">
+        <Link href="/" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Title order={3} fw={800} lts="-0.5px">SnapFab</Title>
+        </Link>
+      </Group>
 
-      <Box
-        position="fixed"
-        left="0"
-        top="0"
-        h="full"
-        zIndex="50"
-        w="44"
-        transition="transform 0.3s"
-        transform={{
-          base: isOpen ? "translateX(0)" : "translateX(-100%)",
-          md: "translateX(0)",
-        }}
-        bg="bg.sidebar"
-        borderRight="1px solid"
-        borderColor="border.subtle"
-      >
-        <Flex
-          align="center"
-          justify="space-between"
-          px="4"
-          h="16"
-          borderBottom="1px solid"
-          borderColor="border.subtle"
-        >
-          <Text fontSize="xl" fontWeight="bold" color="text.primary">
-            <ChakraLink as={Link} href="/" _hover={{ textDecoration: "none" }}>
-              SnapFab
-            </ChakraLink>
-          </Text>
-          <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
-        </Flex>
-
-        <VStack as="nav" mt="4" spacing="1" px="2" align="stretch">
-          {navItems.map((item) => {
-            const isActive = router.pathname === item.href;
-            return (
-              <ChakraLink
-                key={item.href}
-                as={Link}
-                href={item.href}
-                display="block"
-                px="4"
-                py="2"
-                rounded="md"
-                bg={isActive ? "bg.active" : "transparent"}
-                color={isActive ? "accent.primary" : "text.secondary"}
-                fontWeight={isActive ? "semibold" : "medium"}
-                _hover={{ bg: "bg.hover", color: isActive ? "accent.primary" : "text.primary" }}
-                transition="all 0.2s"
-                onClick={onClose}
-              >
-                {item.name}
-              </ChakraLink>
-            );
-          })}
-        </VStack>
+      <Stack gap="xs" style={{ flex: 1 }}>
+        {navItems.map((item) => (
+          <NavLink
+            key={item.href}
+            component={Link}
+            href={item.href}
+            label={item.name}
+            leftSection={item.icon}
+            active={router.pathname === item.href}
+            onClick={closeMobileNav}
+            variant="filled"
+            p="md"
+            style={{ 
+              borderRadius: 'var(--mantine-radius-md)',
+              fontWeight: router.pathname === item.href ? 600 : 400
+            }}
+          />
+        ))}
+      </Stack>
+      
+      <Box pt="md" style={{ borderTop: '1px solid var(--mantine-color-default-border)' }}>
+        <Text size="xs" c="dimmed" ta="center">© 2025 SnapFab v2.0</Text>
       </Box>
-
-      {/* Hamburger button for mobile */}
-      {!isOpen && (
-        <IconButton
-          aria-label="Open menu"
-          icon={<Menu size={20} />}
-          position="fixed"
-          top="4"
-          left="4"
-          display={{ base: "flex", md: "none" }}
-          zIndex="50"
-          variant="outline"
-          bg="bg.sidebar"
-          borderColor="border.subtle"
-          onClick={onOpen}
-        />
-      )}
-    </>
+    </Box>
   );
 };
 

@@ -4,14 +4,14 @@ export type Status = {
   color: string; // or color: `string` if you want to allow Chakra color strings
 };
 
-const STATUS_ON_DECK: Status = { id: 1, name: "On Deck", color: "blue.300" };
+const STATUS_ON_DECK: Status = { id: 1, name: "On Deck", color: "var(--mantine-color-blue-1)" };
 const STATUS_IN_PROGRESS: Status = {
   id: 2,
   name: "In Progress",
-  color: "yellow.400",
+  color: "var(--mantine-color-yellow-1)",
 };
-const STATUS_TESTING: Status = { id: 3, name: "Testing", color: "pink.300" };
-const STATUS_DEPLOYED: Status = { id: 4, name: "Deployed", color: "green.300" };
+const STATUS_TESTING: Status = { id: 3, name: "Testing", color: "var(--mantine-color-pink-1)" };
+const STATUS_DEPLOYED: Status = { id: 4, name: "Deployed", color: "var(--mantine-color-green-1)" };
 export const STATUSES = [
   STATUS_ON_DECK,
   STATUS_IN_PROGRESS,

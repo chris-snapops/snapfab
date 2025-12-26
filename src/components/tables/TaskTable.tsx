@@ -1,9 +1,6 @@
-// https://youtu.be/CjqG277Hmgg?t=1674
-
-import { Box } from "@chakra-ui/react";
-import { buildHeaderGroups, getCoreRowModel, RowModel, Table, useReactTable, flexRender } from "@tanstack/react-table"
-import { Status } from "../../../public/temptabledata"
-import DATA from "../../../public/temptabledata"
+import { Box, Text } from "@mantine/core";
+import { getCoreRowModel, useReactTable, flexRender } from "@tanstack/react-table";
+import DATA from "../../../public/temptabledata";
 import { useState } from "react";
 import StringCell from "./StringCell";
 import EnumCell from "./EnumCell";
@@ -23,14 +20,18 @@ const columns = [
   {
     accessorKey: 'due',
     header: 'Due',
-    cell: (props: any) => <p>{props.getValue()?.toLocaleTimeString()}</p>
+    cell: (props: any) => {
+      const value = props.getValue();
+      return <Text size="sm">{value ? new Date(value).toLocaleDateString() : "-"}</Text>;
+    }
   },
   {
     accessorKey: 'notes',
     header: 'Notes',
-    cell: (props: any) => <p>{props.getValue()}</p>
+    size: 400,
+    cell: StringCell
   }
-]
+];
 
 const TaskTable = () => {
   const [data, setData] = useState(DATA);
@@ -45,21 +46,28 @@ const TaskTable = () => {
           (row, index) =>
             index === rowIndex
               ? {
-                ...prev[rowIndex],
+                ...row,
                 [columnId]: value,
               } : row
         )
       )
     }
   });
-  console.log(data);
+
   return (
-    <Box overflowX="auto" pb={4}>
-      <Box className="tanstack-table" w={table.getTotalSize()}>
+    <Box style={{ overflowX: 'auto' }} pb="md">
+      <Box className="tanstack-table" style={{ width: table.getTotalSize() }}>
         {table.getHeaderGroups().map(headerGroup => (
-          <Box className="tanstack-tr" key={headerGroup.id}>
+          <Box className="tanstack-tr" key={headerGroup.id} style={{ display: 'flex' }}>
             {headerGroup.headers.map(header => (
-              <Box className="tanstack-th" w={header.getSize()} key={header.id} position="relative">
+              <Box 
+                className="tanstack-th" 
+                key={header.id} 
+                style={{ 
+                  width: header.getSize(),
+                  position: 'relative'
+                }}
+              >
                 {header.column.columnDef.header instanceof Function
                   ? header.column.columnDef.header(header.getContext())
                   : header.column.columnDef.header
@@ -74,9 +82,13 @@ const TaskTable = () => {
           </Box>
         ))}
         {table.getRowModel().rows.map(row => (
-          <Box className="tanstack-tr" key={row.id}>
+          <Box className="tanstack-tr" key={row.id} style={{ display: 'flex' }}>
             {row.getVisibleCells().map(cell => (
-              <Box className="tanstack-td" w={cell.column.getSize()} key={cell.id}>
+              <Box 
+                className="tanstack-td" 
+                key={cell.id}
+                style={{ width: cell.column.getSize() }}
+              >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </Box>
             ))}
@@ -86,4 +98,5 @@ const TaskTable = () => {
     </Box>
   );
 };
+
 export default TaskTable;
