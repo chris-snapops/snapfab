@@ -1,7 +1,10 @@
 import { createTheme, MantineThemeOverride } from '@mantine/core';
 
-export const getTheme = (primaryColor: string): MantineThemeOverride => {
+export const getTheme = (primaryColor: string, dateValueFormat: string): MantineThemeOverride => {
   return createTheme({
+    other: {
+      dateValueFormat,
+    },
     primaryColor: primaryColor,
     primaryShade: { light: 6, dark: 8 },
     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',

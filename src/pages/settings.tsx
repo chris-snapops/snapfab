@@ -6,6 +6,8 @@ import { Sun, Moon } from "lucide-react";
 interface SettingsProps {
   primaryColor: string;
   setPrimaryColor: (color: string) => void;
+  dateValueFormat: string;
+  setDateValueFormat: (format: string) => void;
 }
 
 const THEME_COLORS = [
@@ -16,7 +18,14 @@ const THEME_COLORS = [
   { name: 'amber', color: '#f59e0b' },
 ];
 
-export default function Settings({ primaryColor, setPrimaryColor }: SettingsProps) {
+const DATE_FORMATS = [
+  { label: "Default (Dec 26, 2025)", value: "MMM D, YYYY" },
+  { label: "DD/MM/YYYY (26/12/2025)", value: "DD/MM/YYYY" },
+  { label: "MM/DD/YYYY (12/26/2025)", value: "MM/DD/YYYY" },
+  { label: "YYYY-MM-DD (2025-12-26)", value: "YYYY-MM-DD" },
+];
+
+export default function Settings({ primaryColor, setPrimaryColor, dateValueFormat, setDateValueFormat }: SettingsProps) {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const theme = useMantineTheme();
   const [mounted, setMounted] = useState(false);
@@ -28,6 +37,11 @@ export default function Settings({ primaryColor, setPrimaryColor }: SettingsProp
   const handleColorChange = (color: string) => {
     setPrimaryColor(color);
     localStorage.setItem("snapfab-primary-color", color);
+  };
+
+  const handleDateFormatChange = (format: string) => {
+    setDateValueFormat(format);
+    localStorage.setItem("snapfab-date-format", format);
   };
 
   return (
@@ -84,9 +98,33 @@ export default function Settings({ primaryColor, setPrimaryColor }: SettingsProp
           </Box>
           
           <Divider my="xl" />
+
+          <Box mb="xl">
+            <Text fw={600} mb={4}>Date Format</Text>
+            <Text size="sm" c="dimmed" mb="md">
+              Choose how dates are displayed throughout the application.
+            </Text>
+            <Group gap="sm">
+                {DATE_FORMATS.map((format) => (
+                  <Button
+                    key={format.value}
+                    variant={dateValueFormat === format.value ? "filled" : "light"}
+                    color={primaryColor}
+                    onClick={() => handleDateFormatChange(format.value)}
+                    size="sm"
+                    radius="md"
+                  >
+                    {format.label}
+                  </Button>
+                ))}
+            </Group>
+          </Box>
+
+          <Divider my="xl" />
           
           <Box>
             <Text fw={600} mb={4}>Application Information</Text>
+
             <Text size="sm" c="dimmed">
               SnapFab is a utility-first manufacturing database orchestration platform.
             </Text>

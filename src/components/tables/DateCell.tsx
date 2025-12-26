@@ -1,16 +1,19 @@
-import { Box, Input } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
+// https://mantine.dev/dates/date-input/
 
+import { Box, Input, useMantineTheme } from "@mantine/core";
+import { DateInput } from "@mantine/dates";
 
 const DateCell = ({ getValue, row, column, table }: any) => {
   const date = getValue();
   const { updateData } = table.options.meta;
+  const theme = useMantineTheme();
+  
   return (
     <>
       <DateInput
         value={date}
         onChange={(date) => updateData(row.index, column.id, date)}
-        valueFormat="MMM D, YYYY"
+        valueFormat={theme.other.dateValueFormat}
         firstDayOfWeek={0}
         variant="filled"
         p="4px 8px"
