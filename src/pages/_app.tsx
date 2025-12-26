@@ -1,4 +1,5 @@
 import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
 import { useState, useEffect } from "react";
 import type { AppProps } from "next/app";
 import { MantineProvider } from "@mantine/core";

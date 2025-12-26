@@ -4,6 +4,7 @@ import DATA from "../../../public/temptabledata";
 import { useState } from "react";
 import StringCell from "./StringCell";
 import EnumCell from "./EnumCell";
+import DateCell from "./DateCell";
 
 const columns = [
   {
@@ -20,10 +21,7 @@ const columns = [
   {
     accessorKey: 'due',
     header: 'Due',
-    cell: (props: any) => {
-      const value = props.getValue();
-      return <Text size="sm">{value ? new Date(value).toLocaleDateString() : "-"}</Text>;
-    }
+    cell: DateCell
   },
   {
     accessorKey: 'notes',
@@ -39,7 +37,7 @@ const TaskTable = () => {
     data,
     columns,
     defaultColumn: {
-      minSize: 120,
+      minSize: 150,
     },
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: "onChange",
