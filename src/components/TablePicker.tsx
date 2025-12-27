@@ -33,7 +33,7 @@ const TablePicker: React.FC<TablePickerProps> = ({ tables, onCreate }) => {
         style={{
           borderBottom: '1px solid var(--mantine-color-default-border)',
           background: 'linear-gradient(to right, var(--mantine-primary-color-light), transparent)',
-          '[data-mantine-color-scheme="dark"] &': {
+          '[dataMantineColorScheme="dark"] &': {
             background: 'none'
           }
         }}

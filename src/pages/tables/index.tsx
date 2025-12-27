@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Center, Loader, Stack, Text } from "@mantine/core";
 import TablePicker from "../../components/TablePicker";
 import Layout from "../../components/Layout";
-import { listTables, orgName } from "../../utils/supabaseUtils";
+import { listTables } from "../../utils/supabaseUtils";
 
 export default function Tables() {
   const [tables, setTables] = useState<any[]>([]);
@@ -13,7 +13,8 @@ export default function Tables() {
     async function fetchTables() {
       try {
         setLoading(true);
-        const tableData = await listTables(orgName);
+        const orgId = localStorage.getItem("snapfab-org");
+        const tableData = await listTables(orgId || "");
         
         const formattedTables = tableData.map((t: any) => ({
           table_name: t.table_name,

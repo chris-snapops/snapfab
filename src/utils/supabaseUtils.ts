@@ -36,11 +36,11 @@ const waitForSession = async () => {
 };
 
 
-export const listTables = async (orgName: string) => {
+export const listTables = async (orgId: string) => {
   await waitForSession();
 
-  const { data: rpcData, error } = await supabase.rpc('list_tables', {
-    org_name: orgName,
+  const { data: rpcData, error } = await supabase.rpc('list_tables_by_org_id', {
+    org_id: orgId,
   });
 
   if (error) throw error;
@@ -61,4 +61,13 @@ export const getTable = async (tableId: string) => {
   return rpcData;
 };
 
-export const orgName = "SnapFab Demo Org";
+
+export const listOrgs = async () => {
+  await waitForSession();
+
+  const { data: rpcData, error } = await supabase.rpc('list_orgs');
+
+  if (error) throw error;
+
+  return rpcData;
+};

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getTable, listTables } from '../utils/supabaseUtils';
+import { getTable, listTables, listOrgs } from '../utils/supabaseUtils';
 import Layout from "../components/Layout";
 import { Container, Title, Code, Loader, Alert, Box, TextInput, ActionIcon, Group, Grid } from '@mantine/core';
 import { RefreshCw, Copy, Check } from 'lucide-react';
@@ -10,24 +10,26 @@ export default function TestingPage() {
   const [tableName, setTableName] = useState('eaa2329b-55a8-4279-854e-71289f27975d');
   const [data, setData] = useState<any>(null);
   const [tables, setTables] = useState<any>(null);
+  const [orgs, setOrgs] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copiedTables, setCopiedTables] = useState(false);
   const [copiedData, setCopiedData] = useState(false);
 
-  const fetchData = async () => {
+
+  const fetchOrgs = async () => {
     setLoading(true);
     setError(null);
     try {
-      const tableData = await getTable(tableName);
-      setData(tableData);
+      const orgsList = await listOrgs();
+      setOrgs(orgsList);
+      console.log(JSON.stringify(orgsList, null, 2));
     } catch (err: any) {
-      setError(`getTable error: ${err.message}`);
+      setError(`listOrgs error: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
-
 
   const fetchTables = async () => {
     setLoading(true);
@@ -37,6 +39,19 @@ export default function TestingPage() {
       setTables(tablesList);
     } catch (err: any) {
       setError(`listTables error: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const tableData = await getTable(tableName);
+      setData(tableData);
+    } catch (err: any) {
+      setError(`getTable error: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -63,6 +78,7 @@ export default function TestingPage() {
   useEffect(() => {
     fetchData();
     fetchTables();
+    fetchOrgs();
   }, [tableName, orgName]);
 
   return (

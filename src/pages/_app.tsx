@@ -13,6 +13,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [org, setOrg] = useState("");
 
   // Load from localStorage immediately after mount
   useEffect(() => {
@@ -36,6 +37,11 @@ export default function App({ Component, pageProps }: AppProps) {
     const savedPassword = localStorage.getItem("snapfab-password");
     if (savedPassword) {
       setPassword(savedPassword);
+    }
+
+    const savedOrg = localStorage.getItem("snapfab-org");
+    if (savedOrg) {
+      setOrg(savedOrg);
     }
   }, []);
 
@@ -80,6 +86,8 @@ export default function App({ Component, pageProps }: AppProps) {
         password={password}
         setPassword={setPassword}
         login={login}
+        org={org}
+        setOrg={setOrg}
       />
     </MantineProvider>
   );
