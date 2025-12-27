@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../../supabaseClient';
+import { getTable } from '../utils/supabaseUtils';
+import Layout from "../components/Layout";
 import { Container, Title, Code, Loader, Alert, Box } from '@mantine/core';
+
 
 export default function TestingPage() {
   const [data, setData] = useState<any[] | null>(null);
@@ -9,13 +11,10 @@ export default function TestingPage() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const { data: userTables, error } = await supabase
-          .from('user_rows')
-          .select('*');
-
-        if (error) throw error;
-        setData(userTables);
+        const rows = await getTable('Ingredients');
+        setData(rows);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -27,25 +26,27 @@ export default function TestingPage() {
   }, []);
 
   return (
-    <Container p="md">
-      <Title order={2} mb="md">Supabase Data: test01</Title>
-      
-      {loading && <Loader />}
-      
-      {error && (
-        <Alert color="red" title="Error" mb="md">
-          {error}
-        </Alert>
-      )}
+    <Layout>
+      <Container p="md">
+        <Title order={2} mb="md">Testing Page</Title>
 
-      {data && (
-        <Box>
-           <Title order={4} mb="xs">Record Count: {data.length}</Title>
-           <Code block style={{ whiteSpace: 'pre-wrap' }}>
-            {JSON.stringify(data, null, 2)}
-          </Code>
-        </Box>
-      )}
-    </Container>
+        {loading && <Loader />}
+
+        {error && (
+          <Alert color="red" title="Error" mb="md">
+            {error}
+          </Alert>
+        )}
+
+        {data && (
+          <Box mt="md">
+            <Title order={4} mb="xs">Record Count: {data.length}</Title>
+            <Code block style={{ whiteSpace: 'pre-wrap' }}>
+              {JSON.stringify(data, null, 2)}
+            </Code>
+          </Box>
+        )}
+      </Container>
+    </Layout>
   );
 }
