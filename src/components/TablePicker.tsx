@@ -4,7 +4,11 @@ import { Plus, Table as TableIcon, ArrowRight } from "lucide-react";
 import { Box, Flex, TextInput, Button, Text, Stack, Card, Group, Title, ThemeIcon, Center } from "@mantine/core";
 
 interface TablePickerProps {
-  tables: { name: string; rows?: number; href: string }[];
+  tables: {
+    table_name: string;
+    table_id: string;
+    href: string;
+  }[];
   onCreate: () => void;
 }
 
@@ -24,9 +28,9 @@ const TablePicker: React.FC<TablePickerProps> = ({ tables, onCreate }) => {
         }
       })}
     >
-      <Box 
-        p="lg" 
-        style={{ 
+      <Box
+        p="lg"
+        style={{
           borderBottom: '1px solid var(--mantine-color-default-border)',
           background: 'linear-gradient(to right, var(--mantine-primary-color-light), transparent)',
           '[data-mantine-color-scheme="dark"] &': {
@@ -61,7 +65,7 @@ const TablePicker: React.FC<TablePickerProps> = ({ tables, onCreate }) => {
         )}
         {tables.map((table) => (
           <Link
-            key={table.name}
+            key={table.table_name}
             href={table.href}
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
@@ -69,7 +73,7 @@ const TablePicker: React.FC<TablePickerProps> = ({ tables, onCreate }) => {
               p="lg"
               gap="md"
               wrap="nowrap"
-              style={{ 
+              style={{
                 cursor: 'pointer',
                 borderBottom: '1px solid var(--mantine-color-default-border)',
                 transition: 'all 0.2s ease'
@@ -92,13 +96,8 @@ const TablePicker: React.FC<TablePickerProps> = ({ tables, onCreate }) => {
               </ThemeIcon>
               <Box flex={1}>
                 <Text size="sm" fw={600}>
-                  {table.name}
+                  {table.table_name}
                 </Text>
-                {table.rows !== undefined && (
-                  <Text size="xs" c="dimmed">
-                    {table.rows} records
-                  </Text>
-                )}
               </Box>
               <ArrowRight size={16} color="var(--mantine-color-dimmed)" />
             </Group>

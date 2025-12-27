@@ -13,6 +13,7 @@ const Sidebar = ({ closeMobileNav }: SidebarProps) => {
   const navItems = [
     { name: "Home", href: "/", icon: <Home size={20} strokeWidth={1.5} /> },
     { name: "Tables", href: "/tables", icon: <Table size={20} strokeWidth={1.5} /> },
+    { name: "Tasks", href: "/tasks", icon: <Wrench size={20} strokeWidth={1.5} /> },
     { name: "Feasibility", href: "/feasibility", icon: <BarChart2 size={20} strokeWidth={1.5} /> },
     { name: "Testing", href: "/testing", icon: <Wrench size={20} strokeWidth={1.5} /> },
     { name: "Settings", href: "/settings", icon: <Settings size={20} strokeWidth={1.5} /> },

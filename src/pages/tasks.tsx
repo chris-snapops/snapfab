@@ -1,6 +1,6 @@
 import { Box, Title } from "@mantine/core";
-import TaskTable from "../../components/tables/TaskTable";
-import Layout from "../../components/Layout";
+import TaskTable from "../components/tables/TaskTable";
+import Layout from "../components/Layout";
 
 function App() {
   return (

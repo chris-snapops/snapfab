@@ -1,38 +1,60 @@
-import { Box, Flex, Text } from "@mantine/core";
+import { Box, Flex, Loader, Center } from "@mantine/core";
 import { getCoreRowModel, useReactTable, flexRender } from "@tanstack/react-table";
-import DATA from "../../../public/temptabledata";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { getTable } from "../../utils/supabaseUtils";
 import StringCell from "./StringCell";
 import EnumCell from "./EnumCell";
 import DateCell from "./DateCell";
 
-const columns = [
-  {
-    accessorKey: 'task',
-    header: 'Task',
-    size: 200, 
-    cell: StringCell
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: EnumCell
-  },
-  {
-    accessorKey: 'due',
-    header: 'Due',
-    cell: DateCell
-  },
-  {
-    accessorKey: 'notes',
-    header: 'Notes',
-    size: 400,
-    cell: StringCell
+// Helper to map your DB types to your React components
+const getCellComponent = (colType: string) => {
+  switch (colType) {
+    case 'enum_single':
+      return EnumCell;
+    case 'date':
+      return DateCell;
+    default:
+      return StringCell;
   }
-];
+};
 
-const TaskTable = () => {
-  const [data, setData] = useState(DATA);
+const AppTable = ({ tableId }: { tableId: string }) => {
+  const [data, setData] = useState<any[]>([]);
+  const [headers, setHeaders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const result = await getTable(tableId);
+        setData(result.data);
+        setHeaders(result.headers);
+      } catch (error) {
+        console.error("Error fetching table:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+    console.log(data);
+  }, [tableId]);
+
+  // Dynamically generate columns based on the 'headers' from Supabase
+  const columns = useMemo(() => {
+    return headers.map((h) => ({
+      accessorKey: h.col_name,
+      header: h.col_name.charAt(0).toUpperCase() + h.col_name.slice(1).replace(/_/g, ' '),
+      cell: getCellComponent(h.col_type),
+      // Pass col_config to the cell meta if needed
+      meta: {
+        config: h.col_config,
+        isRequired: h.col_is_required
+      }
+    }));
+  }, [headers]);
+
   const table = useReactTable({
     data,
     columns,
@@ -42,32 +64,33 @@ const TaskTable = () => {
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: "onChange",
     meta: {
-      updateData: (rowIndex: number, columnId: string, value: string) => setData(
-        prev => prev.map(
-          (row, index) =>
-            index === rowIndex ? { ...row, [columnId]: value } : row
-        )
-      )
+      updateData: (rowIndex: number, columnId: string, value: any) =>
+        setData(prev => prev.map((row, index) =>
+          index === rowIndex ? { ...row, [columnId]: value } : row
+        ))
     }
   });
 
+  if (loading) {
+    return (
+      <Center h={200}>
+        <Loader color="blue" />
+      </Center>
+    );
+  }
+
   return (
-    <Box 
+    <Box
       style={{ overflowX: 'auto', borderRadius: 'var(--mantine-radius-md)' }}
       bd="1px solid var(--mantine-color-default-border)"
       mb="md"
     >
       <style>{`
-        .tanstack-tr {
-          transition: background-color 0.1s ease;
-        }
-        .tanstack-tr:hover {
-          background-color: var(--mantine-color-gray-0);
-        }
-        [data-mantine-color-scheme='dark'] .tanstack-tr:hover {
-          background-color: var(--mantine-color-dark-6);
-        }
+        .tanstack-tr { transition: background-color 0.1s ease; }
+        .tanstack-tr:hover { background-color: var(--mantine-color-gray-0); }
+        [data-mantine-color-scheme='dark'] .tanstack-tr:hover { background-color: var(--mantine-color-dark-6); }
       `}</style>
+
       <Flex
         className="tanstack-table"
         w={table.getTotalSize()}
@@ -103,25 +126,19 @@ const TaskTable = () => {
                   onTouchStart={header.getResizeHandler()}
                   className={`resizer ${header.column.getIsResizing() ? "isResizing" : ""}`}
                   style={{
-                    position: 'absolute',
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                    width: 6,
-                    cursor: 'col-resize',
-                    userSelect: 'none',
-                    touchAction: 'none',
-                    zIndex: 1,
+                    position: 'absolute', right: 0, top: 0, bottom: 0, width: 6,
+                    cursor: 'col-resize', userSelect: 'none', touchAction: 'none', zIndex: 1,
                   }}
                 />
               </Flex>
             ))}
           </Flex>
         ))}
+
         {table.getRowModel().rows.map(row => (
-          <Flex 
-            className="tanstack-tr" 
-            key={row.id} 
+          <Flex
+            className="tanstack-tr"
+            key={row.id}
             style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
           >
             {row.getVisibleCells().map(cell => (
@@ -144,4 +161,4 @@ const TaskTable = () => {
   );
 };
 
-export default TaskTable;
+export default AppTable;
