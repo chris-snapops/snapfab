@@ -112,7 +112,7 @@ const TaskTable = () => {
                     userSelect: 'none',
                     touchAction: 'none',
                     zIndex: 1,
-                    backgroundColor: header.column.getIsResizing() ? 'var(--mantine-color-blue-6)' : 'transparent',
+                    backgroundColor: header.column.getIsResizing() ? 'var(--mantine-primary-color-filled)' : 'transparent',
                     opacity: header.column.getIsResizing() ? 1 : 0,
                   }}
                 />
