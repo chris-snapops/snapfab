@@ -5,12 +5,22 @@ export const getTable = async (tableName: string) => {
   let { data: { session } } = await supabase.auth.getSession();
 
   if (!session) {
-      // Wait for sign in event
-      await new Promise<void>((resolve) => {
+      // Wait for sign in event with timeout
+      await new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+              subscription.unsubscribe();
+              reject(new Error('Authentication timeout: No session available'));
+          }, 5000); // 5 second timeout
+
           const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-              if (event === 'SIGNED_IN' || session) {
+              if (event === 'SIGNED_IN' && session) {
+                  clearTimeout(timeout);
                   subscription.unsubscribe();
                   resolve();
+              } else if (event === 'SIGNED_OUT') {
+                  clearTimeout(timeout);
+                  subscription.unsubscribe();
+                  reject(new Error('Authentication failed: User signed out'));
               }
           });
       });

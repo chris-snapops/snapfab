@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Layout from "../components/Layout";
-import { Title, Text, Box, Group, Button, Divider, useMantineColorScheme, Card, Container, ColorSwatch, useMantineTheme, CheckIcon, Center, Stack } from "@mantine/core";
+import { Title, Text, Box, Group, Button, Divider, useMantineColorScheme, Card, Container, ColorSwatch, useMantineTheme, CheckIcon, Center, Stack, TextInput, PasswordInput } from "@mantine/core";
 import { Sun, Moon } from "lucide-react";
 
 interface SettingsProps {
@@ -8,6 +8,11 @@ interface SettingsProps {
   setPrimaryColor: (color: string) => void;
   dateValueFormat: string;
   setDateValueFormat: (format: string) => void;
+  email: string;
+  setEmail: (email: string) => void;
+  password: string;
+  setPassword: (password: string) => void;
+  login: (email: string, password: string) => Promise<any>;
 }
 
 const THEME_COLORS = [
@@ -25,14 +30,23 @@ const DATE_FORMATS = [
   { label: "YYYY-MM-DD (2025-12-26)", value: "YYYY-MM-DD" },
 ];
 
-export default function Settings({ primaryColor, setPrimaryColor, dateValueFormat, setDateValueFormat }: SettingsProps) {
+export default function Settings({ primaryColor, setPrimaryColor, dateValueFormat, setDateValueFormat, email, setEmail, password, setPassword, login }: SettingsProps) {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const theme = useMantineTheme();
   const [mounted, setMounted] = useState(false);
+  
+  const [localEmail, setLocalEmail] = useState(email);
+  const [localPassword, setLocalPassword] = useState(password);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+  
+  // Sync prop changes to local state (e.g. initial load)
+  useEffect(() => {
+     setLocalEmail(email);
+     setLocalPassword(password);
+  }, [email, password]);
 
   const handleColorChange = (color: string) => {
     setPrimaryColor(color);
@@ -42,6 +56,23 @@ export default function Settings({ primaryColor, setPrimaryColor, dateValueForma
   const handleDateFormatChange = (format: string) => {
     setDateValueFormat(format);
     localStorage.setItem("snapfab-date-format", format);
+  };
+
+  const handleSaveCredentials = async () => {
+    setEmail(localEmail);
+    setPassword(localPassword);
+    
+    // Refresh auth
+    const { error } = await login(localEmail, localPassword);
+    
+    if (error) {
+       console.error("Login failed:", error.message);
+       alert(`Login failed: ${error.message}`);
+    } else {
+       localStorage.setItem("snapfab-email", localEmail);
+       localStorage.setItem("snapfab-password", localPassword);
+       alert("Credentials saved and logged in successfully!");
+    }
   };
 
   return (
@@ -118,6 +149,32 @@ export default function Settings({ primaryColor, setPrimaryColor, dateValueForma
                   </Button>
                 ))}
             </Group>
+          </Box>
+
+          <Divider my="xl" />
+
+          <Box mb="xl">
+            <Text fw={600} mb={4}>Account</Text>
+            <Text size="sm" c="dimmed" mb="md">
+              Manage your authentication credentials.
+            </Text>
+            <Stack>
+              <TextInput
+                label="Email"
+                placeholder="your@email.com"
+                value={localEmail}
+                onChange={(e) => setLocalEmail(e.currentTarget.value)}
+              />
+              <PasswordInput
+                label="Password"
+                placeholder="Your password"
+                value={localPassword}
+                onChange={(e) => setLocalPassword(e.currentTarget.value)}
+              />
+              <Button onClick={handleSaveCredentials} color={primaryColor}>
+                 Save & Sign In
+              </Button>
+            </Stack>
           </Box>
 
           <Divider my="xl" />

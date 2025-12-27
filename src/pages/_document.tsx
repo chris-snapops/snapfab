@@ -7,6 +7,18 @@ export default function Document() {
       <Head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <ColorSchemeScript defaultColorScheme="light" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var savedColor = localStorage.getItem('snapfab-primary-color');
+                if (savedColor) {
+                  document.documentElement.setAttribute('data-primary-color', savedColor);
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
       </Head>
       <body className="antialiased">
         <Main />
