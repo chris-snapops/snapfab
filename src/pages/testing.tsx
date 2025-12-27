@@ -6,7 +6,7 @@ import { RefreshCw, Copy, Check } from 'lucide-react';
 
 
 export default function TestingPage() {
-  const [orgName, setOrgName] = useState('SnapFab Demo Org');
+  const [orgId, setOrgId] = useState('7046697c-981b-4f43-82dd-b5c8eb0bf1cc');
   const [tableName, setTableName] = useState('eaa2329b-55a8-4279-854e-71289f27975d');
   const [data, setData] = useState<any>(null);
   const [tables, setTables] = useState<any>(null);
@@ -35,7 +35,7 @@ export default function TestingPage() {
     setLoading(true);
     setError(null);
     try {
-      const tablesList = await listTables(orgName);
+      const tablesList = await listTables(orgId);
       setTables(tablesList);
     } catch (err: any) {
       setError(`listTables error: ${err.message}`);
@@ -79,7 +79,7 @@ export default function TestingPage() {
     fetchData();
     fetchTables();
     fetchOrgs();
-  }, [tableName, orgName]);
+  }, [tableName, orgId]);
 
   return (
     <Layout>
@@ -94,10 +94,10 @@ export default function TestingPage() {
 
         <Group mb="md">
           <TextInput
-            label="Organization Name"
-            placeholder="Enter organization name"
-            value={orgName}
-            onChange={(e) => setOrgName(e.currentTarget.value)}
+            label="Organization ID"
+            placeholder="Enter organization ID"
+            value={orgId}
+            onChange={(e) => setOrgId(e.currentTarget.value)}
             style={{ flex: 1 }}
           />
         </Group>
