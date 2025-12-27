@@ -86,8 +86,7 @@ export default function TablePage() {
             bd="1px solid var(--mantine-color-default-border)"
           >
             <style>{`
-              .tanstack-tr:hover { background-color: var(--mantine-color-default-hover); }
-              [data-mantine-color-scheme='dark'] .tanstack-tr:hover { background-color: var(--mantine-color-dark-6); }
+              .tanstack-tr:hover { background-color: var(--mantine-primary-color-light); }
             `}</style>
 
             <Flex

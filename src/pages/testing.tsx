@@ -88,8 +88,8 @@ export default function TestingPage() {
 
         <Group mb="md">
           <TextInput
-            label="Table Name"
-            placeholder="Enter table name"
+            label="Table ID"
+            placeholder="Enter table ID"
             value={tableName}
             onChange={(e) => setTableName(e.currentTarget.value)}
             style={{ flex: 1 }}
