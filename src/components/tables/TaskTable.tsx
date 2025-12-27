@@ -1,6 +1,6 @@
 import { Box, Flex, Text } from "@mantine/core";
 import { getCoreRowModel, useReactTable, flexRender } from "@tanstack/react-table";
-import DATA from "../../../public/temptabledata";
+import { STATUSES, DATA } from "../../../public/temptabledata";
 import { useState } from "react";
 import StringCell from "./StringCell";
 import EnumCell from "./EnumCell";
@@ -10,13 +10,19 @@ const columns = [
   {
     accessorKey: 'task',
     header: 'Task',
-    size: 200, 
+    size: 200,
     cell: StringCell
   },
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: EnumCell
+    cell: EnumCell,
+    // Pass the options into meta.config
+    meta: {
+      config: {
+        options: STATUSES
+      }
+    }
   },
   {
     accessorKey: 'due',
@@ -52,7 +58,7 @@ const TaskTable = () => {
   });
 
   return (
-    <Box 
+    <Box
       style={{ overflowX: 'auto', borderRadius: 'var(--mantine-radius-md)' }}
       bd="1px solid var(--mantine-color-default-border)"
       mb="md"
@@ -119,9 +125,9 @@ const TaskTable = () => {
           </Flex>
         ))}
         {table.getRowModel().rows.map(row => (
-          <Flex 
-            className="tanstack-tr" 
-            key={row.id} 
+          <Flex
+            className="tanstack-tr"
+            key={row.id}
             style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
           >
             {row.getVisibleCells().map(cell => (

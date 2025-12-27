@@ -19,7 +19,7 @@ export const STATUSES = [
   STATUS_DEPLOYED,
 ];
 
-const DATA = [
+export const DATA = [
   {
     task: "Add a New Feature",
     status: STATUS_ON_DECK,
