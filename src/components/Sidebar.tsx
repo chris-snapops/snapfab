@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { NavLink, Text, Box, Stack, Group, Title, ThemeIcon } from "@mantine/core";
-import { Home, Table, BarChart2, Settings } from "lucide-react";
+import { Home, Table, BarChart2, Settings, Wrench } from "lucide-react";
 
 interface SidebarProps {
   closeMobileNav: () => void;
@@ -14,7 +14,7 @@ const Sidebar = ({ closeMobileNav }: SidebarProps) => {
     { name: "Home", href: "/", icon: <Home size={20} strokeWidth={1.5} /> },
     { name: "Tables", href: "/tables", icon: <Table size={20} strokeWidth={1.5} /> },
     { name: "Feasibility", href: "/feasibility", icon: <BarChart2 size={20} strokeWidth={1.5} /> },
-    { name: "Testing", href: "/testing", icon: <Settings size={20} strokeWidth={1.5} /> },
+    { name: "Testing", href: "/testing", icon: <Wrench size={20} strokeWidth={1.5} /> },
     { name: "Settings", href: "/settings", icon: <Settings size={20} strokeWidth={1.5} /> },
   ];
 
