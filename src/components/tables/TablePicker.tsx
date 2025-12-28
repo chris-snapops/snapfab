@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Plus, Table as TableIcon, ArrowRight } from "lucide-react";
-import { Box, Flex, TextInput, Button, Text, Stack, Card, Group, Title, ThemeIcon, Center } from "@mantine/core";
+import { Anchor, Box, Button, Text, Stack, Card, Group, Title, ThemeIcon, Center } from "@mantine/core";
 
 interface TablePickerProps {
   tables: {
@@ -13,6 +13,7 @@ interface TablePickerProps {
 }
 
 const TablePicker: React.FC<TablePickerProps> = ({ tables, onCreate }) => {
+  const orgId = localStorage.getItem("snapfab-org");
   return (
     <Card
       w="100%"
@@ -48,6 +49,7 @@ const TablePicker: React.FC<TablePickerProps> = ({ tables, onCreate }) => {
             leftSection={<Plus size={16} />}
             variant="light"
             radius="md"
+            disabled={!localStorage.getItem("snapfab-org")}
           >
             New Table
           </Button>
@@ -58,8 +60,14 @@ const TablePicker: React.FC<TablePickerProps> = ({ tables, onCreate }) => {
         {tables.length === 0 && (
           <Center p="xl">
             <Stack gap="xs" align="center">
-              <TableIcon size={32} strokeWidth={1} color="var(--mantine-color-dimmed)" />
-              <Text c="dimmed" size="sm">No tables available</Text>
+              {orgId ? (
+                <>
+                  <TableIcon size={32} strokeWidth={1} color="var(--mantine-color-dimmed)" />
+                  <Text c="dimmed" size="sm">No tables available</Text>
+                </>
+              ) : (
+                <Anchor href="/settings" size="sm">Select an organization</Anchor>
+              )}
             </Stack>
           </Center>
         )}

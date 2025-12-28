@@ -49,7 +49,7 @@ export default function TestingPage() {
     setLoading(true);
     setError(null);
     try {
-      const tableData = await getTable(tableId);
+      const tableData = await getTable(tableId, false);
       setCellData(tableData);
     } catch (err: any) {
       setError(`getTable error: ${err.message}`);
@@ -94,12 +94,6 @@ export default function TestingPage() {
           aria-label="Do thing"
           onClick={async () => {
             console.log('Do thing');
-            const colData = await createTable(orgId, {
-              _name: 'test04',
-              _description: 'test description',
-              _archived: false
-            });
-            console.log(colData);
           }}
         >
           Do thing
@@ -149,17 +143,18 @@ export default function TestingPage() {
                 </ActionIcon>
               </Group>
               <Code block style={{ whiteSpace: 'pre-wrap' }}>
-                {tables ? JSON.stringify(tables.map((table: any) => {
-                  if (table.table_archived) return;
-                  return {
-                    table_name: table.table_name,
-                    table_description: table.table_description,
-                    table_id: table.table_id,
-                    org_name: table.org_name,
-                    org_id: table.org_id,
-                    headers: table.headers,
-                  };
-                }), null, 2) : "Organization not found."}
+                {tables ? JSON.stringify(tables
+                  .filter((table: any) => !table.table_archived)
+                  .map((table: any) => {
+                    return {
+                      table_name: table.table_name,
+                      table_description: table.table_description,
+                      table_id: table.table_id,
+                      org_name: table.org_name,
+                      org_id: table.org_id,
+                      headers: table.headers,
+                    };
+                  }), null, 2) : "Organization not found."}
               </Code>
             </Box>
           </Grid.Col>

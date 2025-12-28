@@ -4,6 +4,11 @@
 import { checkIfUuid } from './stringUtils';
 import { supabase } from '../../supabaseClient';
 
+
+
+/* - - - - - - - - Authentication - - - - - - - - - *
+* Wait for session
+*/
 const waitForSession = async () => {
   // First check if credentials are set in settings
   const email = localStorage.getItem('snapfab-email');
@@ -49,6 +54,7 @@ export const listOrgs = async () => {
   await waitForSession();
 
   const { data: rpcData, error } = await supabase.rpc('list_orgs');
+  console.log(JSON.stringify(rpcData, null, 2));
 
   if (error) throw error;
   return rpcData;
@@ -92,7 +98,8 @@ export const createTable = async (orgId: string, tableData: TableData) => {
 };
 
 
-export const listTables = async (orgId: string) => {
+export const listTables = async (orgId: string | null, hideArchived = true) => {
+  if (!orgId) return;
   await waitForSession();
 
   const isUuid = checkIfUuid(orgId);
@@ -102,16 +109,18 @@ export const listTables = async (orgId: string) => {
   });
 
   if (error) throw error;
+  if (hideArchived) return rpcData.filter((t: any) => !t.table_archived);
   return rpcData;
 };
 
-export const getTable = async (tableId: string) => {
+export const getTable = async (tableId: string, headersOnly = false) => {
   await waitForSession();
 
   const isUuid = checkIfUuid(tableId);
 
   const { data: rpcData, error } = await supabase.rpc('get_app_table', {
     [isUuid ? '_table_id' : '_table_name']: tableId,
+    _headers_only: headersOnly,
   });
 
   if (error) {
@@ -151,7 +160,7 @@ type ColumnData = {
   _is_required: boolean;
 }
 
-type CellValue = 
+type CellValue =
   | { _value_text: string }
   | { _value_number: number }
   | { _value_boolean: boolean }
