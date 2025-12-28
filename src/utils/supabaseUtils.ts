@@ -1,3 +1,7 @@
+// utlity sheet for supabase functions
+// https://supabase.com/dashboard/project/zoegnhftibdncrivxekx/database/functions
+
+import { checkIfUuid } from './stringUtils';
 import { supabase } from '../../supabaseClient';
 
 const waitForSession = async () => {
@@ -39,8 +43,10 @@ const waitForSession = async () => {
 export const listTables = async (orgId: string) => {
   await waitForSession();
 
-  const { data: rpcData, error } = await supabase.rpc('list_tables_by_org_id', {
-    org_id: orgId,
+  const isUuid = checkIfUuid(orgId);
+
+  const { data: rpcData, error } = await supabase.rpc('list_app_tables', {
+    [isUuid ? '_org_id' : '_org_name']: orgId,
   });
 
   if (error) throw error;
@@ -52,11 +58,16 @@ export const listTables = async (orgId: string) => {
 export const getTable = async (tableId: string) => {
   await waitForSession();
 
-  const { data: rpcData, error } = await supabase.rpc('get_table_by_id', {
-    table_id: tableId,
+  const isUuid = checkIfUuid(tableId);
+
+  const { data: rpcData, error } = await supabase.rpc('get_app_table', {
+    [isUuid ? '_table_id' : '_table_name']: tableId,
   });
 
-  if (error) throw error;
+  if (error) {
+    if (error.message === 'Table not found') return null;
+    throw error;
+  }
 
   return rpcData;
 };
@@ -66,6 +77,34 @@ export const listOrgs = async () => {
   await waitForSession();
 
   const { data: rpcData, error } = await supabase.rpc('list_orgs');
+
+  if (error) throw error;
+
+  return rpcData;
+};
+
+
+export const createTable = async (name: string, description: string, orgId: string) => {
+  await waitForSession();
+
+  const { data: rpcData, error } = await supabase.rpc('create_app_table', {
+    _name: name,
+    _description: description,
+    _org_id: orgId,
+  });
+
+  if (error) throw error;
+
+  return rpcData;
+};
+
+
+export const deleteTable = async (tableId: string) => {
+  await waitForSession();
+
+  const { data: rpcData, error } = await supabase.rpc('delete_app_table', {
+    _table_id: tableId,
+  });
 
   if (error) throw error;
 

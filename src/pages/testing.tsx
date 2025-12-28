@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import { getTable, listTables, listOrgs } from '../utils/supabaseUtils';
+import { getTable, listTables, listOrgs, createTable } from '../utils/supabaseUtils';
 import Layout from "../components/Layout";
-import { Container, Title, Code, Loader, Alert, Box, TextInput, ActionIcon, Group, Grid } from '@mantine/core';
+import { Container, Title, Code, Loader, Alert, Box, TextInput, ActionIcon, Group, Grid, Button } from '@mantine/core';
 import { RefreshCw, Copy, Check } from 'lucide-react';
 
 
 export default function TestingPage() {
   const [orgId, setOrgId] = useState('7046697c-981b-4f43-82dd-b5c8eb0bf1cc');
-  const [tableName, setTableName] = useState('eaa2329b-55a8-4279-854e-71289f27975d');
-  const [data, setData] = useState<any>(null);
+  const [tableId, setTableId] = useState('eaa2329b-55a8-4279-854e-71289f27975d');
+  const [cellData, setCellData] = useState<any>(null);
   const [tables, setTables] = useState<any>(null);
   const [orgs, setOrgs] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -23,9 +23,9 @@ export default function TestingPage() {
     try {
       const orgsList = await listOrgs();
       setOrgs(orgsList);
-      console.log(JSON.stringify(orgsList, null, 2));
     } catch (err: any) {
       setError(`listOrgs error: ${err.message}`);
+      setOrgs(null);
     } finally {
       setLoading(false);
     }
@@ -39,6 +39,7 @@ export default function TestingPage() {
       setTables(tablesList);
     } catch (err: any) {
       setError(`listTables error: ${err.message}`);
+      setTables(null);
     } finally {
       setLoading(false);
     }
@@ -48,10 +49,11 @@ export default function TestingPage() {
     setLoading(true);
     setError(null);
     try {
-      const tableData = await getTable(tableName);
-      setData(tableData);
+      const tableData = await getTable(tableId);
+      setCellData(tableData);
     } catch (err: any) {
       setError(`getTable error: ${err.message}`);
+      setCellData(null);
     } finally {
       setLoading(false);
     }
@@ -79,12 +81,25 @@ export default function TestingPage() {
     fetchData();
     fetchTables();
     fetchOrgs();
-  }, [tableName, orgId]);
+  }, [tableId, orgId]);
 
   return (
     <Layout>
       <Container p="md">
         <Title order={2} mb="md">Testing Page</Title>
+
+        <Button
+          mb="md"
+          variant="outline"
+          aria-label="Do thing"
+          onClick={async () => {
+            console.log('Do thing');
+            const colData = await createTable('test03', 'test description', orgId);
+            console.log(colData);
+          }}
+        >
+          Do thing
+        </Button>
 
         {error && (
           <Alert color="red" title="Error" mb="md">
@@ -106,19 +121,10 @@ export default function TestingPage() {
           <TextInput
             label="Table ID"
             placeholder="Enter table ID"
-            value={tableName}
-            onChange={(e) => setTableName(e.currentTarget.value)}
+            value={tableId}
+            onChange={(e) => setTableId(e.currentTarget.value)}
             style={{ flex: 1 }}
           />
-          <ActionIcon
-            variant="filled"
-            size="lg"
-            onClick={fetchData}
-            style={{ marginTop: '25px' }}
-            aria-label="Refresh data"
-          >
-            <RefreshCw size={18} />
-          </ActionIcon>
         </Group>
 
         {loading && <Loader />}
@@ -155,34 +161,32 @@ export default function TestingPage() {
           </Grid.Col>
 
           <Grid.Col span={{ base: 12, md: 6 }}>
-            {data && (
-              <Box mt="md">
-                <Group mb="xs" justify="space-between">
-                  <Title order={4}>Data ({data?.data?.length || 0})</Title>
-                  <ActionIcon
-                    variant="subtle"
-                    size="md"
-                    onClick={() => handleCopyJson(data, 'data')}
-                    color={copiedData ? 'green' : 'gray'}
-                    aria-label="Copy JSON data"
-                  >
-                    {copiedData ? <Check size={18} /> : <Copy size={18} />}
-                  </ActionIcon>
-                </Group>
-                <Code block style={{ whiteSpace: 'pre-wrap' }}>
-                  {JSON.stringify({
-                    table: {
-                      table_name: data.table.table_name,
-                      table_id: data.table.table_id,
-                      org_name: data.table.org_name,
-                      org_id: data.table.org_id,
-                    },
-                    headers: data.headers,
-                    data: data.data
-                  }, null, 2)}
-                </Code>
-              </Box>
-            )}
+            <Box mt="md">
+              <Group mb="xs" justify="space-between">
+                <Title order={4}>Data ({cellData?.data?.length || 0})</Title>
+                <ActionIcon
+                  variant="subtle"
+                  size="md"
+                  onClick={() => handleCopyJson(cellData, 'data')}
+                  color={copiedData ? 'green' : 'gray'}
+                  aria-label="Copy JSON data"
+                >
+                  {copiedData ? <Check size={18} /> : <Copy size={18} />}
+                </ActionIcon>
+              </Group>
+              <Code block style={{ whiteSpace: 'pre-wrap' }}>
+                {cellData ? JSON.stringify({
+                  table: {
+                    table_name: cellData.table.table_name,
+                    table_id: cellData.table.table_id,
+                    org_name: cellData.table.org_name,
+                    org_id: cellData.table.org_id,
+                  },
+                  headers: cellData.headers,
+                  data: cellData.data
+                }, null, 2) : "Table not found."}
+              </Code>
+            </Box>
           </Grid.Col>
         </Grid>
       </Container>

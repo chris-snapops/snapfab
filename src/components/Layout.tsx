@@ -3,12 +3,8 @@ import { AppShell, Burger, Group, Text, Box } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Sidebar from "./Sidebar";
 
-interface LayoutProps {
-  children: React.ReactNode;
-  title?: string;
-}
 
-const Layout = ({ children, title }: LayoutProps) => {
+const Layout = ({ children, title }: { children: React.ReactNode; title?: string; }) => {
   const [opened, { toggle, close }] = useDisclosure();
 
   return (
