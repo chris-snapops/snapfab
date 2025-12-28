@@ -107,7 +107,7 @@ export default function TablePage() {
                       className="tanstack-th"
                       key={header.id}
                       w={header.getSize()}
-                      pos="relative" // Added for resizer positioning
+                      pos="relative"
                       align="center"
                       px="12px"
                       py="8px"
@@ -115,7 +115,7 @@ export default function TablePage() {
                       fz={12}
                       h={40}
                       c="var(--mantine-color-text)"
-                      tt="uppercase" // Added Uppercase
+                      tt="uppercase"
                       style={{
                         letterSpacing: '0.05em',
                         borderRight: '1px solid var(--mantine-color-default-border)'
@@ -152,7 +152,7 @@ export default function TablePage() {
                       align="center"
                       style={{ borderRight: '1px solid var(--mantine-color-default-border)' }}
                       mih={40}
-                      fz={14} // Added matching font size
+                      fz={14}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </Flex>
