@@ -8,7 +8,7 @@ const waitForSession = async () => {
   // First check if credentials are set in settings
   const email = localStorage.getItem('snapfab-email');
   const password = localStorage.getItem('snapfab-password');
-  
+
   if (!email || !password) {
     throw new Error('Authentication credentials not configured. Please set your email and password in Settings.');
   }
@@ -40,6 +40,58 @@ const waitForSession = async () => {
 };
 
 
+/* - - - - - - - - Organization RPCs - - - - - - - - - *
+* List
+* List members 
+*/
+
+export const listOrgs = async () => {
+  await waitForSession();
+
+  const { data: rpcData, error } = await supabase.rpc('list_orgs');
+
+  if (error) throw error;
+  return rpcData;
+};
+
+export const listOrgMembers = async () => {
+  await waitForSession();
+
+  const { data: rpcData, error } = await supabase.rpc('list_org_members');
+
+  if (error) throw error;
+  return rpcData;
+};
+
+
+/* - - - - - - - - - - Table RPCs - - - - - - - - - - *
+* Create Table
+* List Tables
+* Get Table
+* Update Table
+* Archive Table 
+*/
+
+type TableData = {
+  _name: string;
+  _description: string;
+  _archived: boolean;
+}
+
+export const createTable = async (orgId: string, tableData: TableData) => {
+  await waitForSession();
+
+  const { data: rpcData, error } = await supabase.rpc('create_app_table', {
+    _org_id: orgId,
+    _name: tableData._name,
+    _description: tableData._description,
+  });
+
+  if (error) throw error;
+  return rpcData;
+};
+
+
 export const listTables = async (orgId: string) => {
   await waitForSession();
 
@@ -50,10 +102,8 @@ export const listTables = async (orgId: string) => {
   });
 
   if (error) throw error;
-
   return rpcData;
 };
-
 
 export const getTable = async (tableId: string) => {
   await waitForSession();
@@ -68,45 +118,103 @@ export const getTable = async (tableId: string) => {
     if (error.message === 'Table not found') return null;
     throw error;
   }
-
   return rpcData;
 };
 
-
-export const listOrgs = async () => {
+export const updateTable = async (tableId: string, tableData: TableData) => {
   await waitForSession();
 
-  const { data: rpcData, error } = await supabase.rpc('list_orgs');
-
-  if (error) throw error;
-
-  return rpcData;
-};
-
-
-export const createTable = async (name: string, description: string, orgId: string) => {
-  await waitForSession();
-
-  const { data: rpcData, error } = await supabase.rpc('create_app_table', {
-    _name: name,
-    _description: description,
-    _org_id: orgId,
+  const { data: rpcData, error } = await supabase.rpc('update_app_table', {
+    _table_id: tableId,
+    _name: tableData._name,
+    _description: tableData._description,
+    _archived: tableData._archived,
   });
 
   if (error) throw error;
+  return rpcData;
+}
 
+
+/* - - - - - - - - - - Cell RPCs - - - - - - - - - - *
+* Create Column
+* Create Row
+* Upsert Cell
+* Archive Column
+* Archive Rows
+*/
+
+type ColumnData = {
+  _name: string;
+  _data_type: keyof CellValue;
+  _config: string;
+  _is_required: boolean;
+}
+
+type CellValue = 
+  | { _value_text: string }
+  | { _value_number: number }
+  | { _value_boolean: boolean }
+  | { _value_date: Date | string }
+  | { _value_json: any };
+
+export const createColumn = async (tableId: string, columnData: ColumnData) => {
+  await waitForSession();
+
+  const { data: rpcData, error } = await supabase.rpc('create_app_column', {
+    _table_id: tableId,
+    _name: columnData._name,
+    _data_type: columnData._data_type,
+    _config: columnData._config,
+    _is_required: columnData._is_required,
+  });
+
+  if (error) throw error;
   return rpcData;
 };
 
-
-export const deleteTable = async (tableId: string) => {
+export const createRow = async (tableId: string) => {
   await waitForSession();
 
-  const { data: rpcData, error } = await supabase.rpc('delete_app_table', {
+  const { data: rpcData, error } = await supabase.rpc('create_app_row', {
     _table_id: tableId,
   });
 
   if (error) throw error;
+  return rpcData;
+};
 
+export const upsertCell = async (colId: string, rowId: string, value: CellValue) => {
+  await waitForSession();
+
+  const { data, error } = await supabase.rpc('upsert_app_cell', {
+    _col_id: colId,
+    _row_id: rowId,
+    ...value,
+  });
+
+  if (error) throw error;
+  return data;
+};
+
+export const archiveColumn = async (colId: string) => {
+  await waitForSession();
+
+  const { data: rpcData, error } = await supabase.rpc('archive_app_column', {
+    _col_id: colId,
+  });
+
+  if (error) throw error;
+  return rpcData;
+};
+
+export const archiveRows = async (rowIds: string[]) => {
+  await waitForSession();
+
+  const { data: rpcData, error } = await supabase.rpc('archive_app_rows', {
+    _row_ids: rowIds,
+  });
+
+  if (error) throw error;
   return rpcData;
 };

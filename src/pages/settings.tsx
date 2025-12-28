@@ -1,8 +1,11 @@
+// here's my current table picker.  please make a slideover modal (comes from the right) with the same kind of styling for creating a new table.  should take in properties name, description, and a dropdown for org id.  org id dropdown populated with values from import { listOrgs } from "../utils/supabaseUtils"; and they return
+
+
 import { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { Title, Text, Box, Group, Button, Divider, useMantineColorScheme, Card, Container, ColorSwatch, useMantineTheme, CheckIcon, Center, Stack, TextInput, PasswordInput, Select } from "@mantine/core";
 import { Sun, Moon } from "lucide-react";
-import { listOrgs } from "../utils/supabaseUtils"; // Assuming this is the path
+import { listOrgs } from "../utils/supabaseUtils";
 
 interface SettingsProps {
   primaryColor: string;

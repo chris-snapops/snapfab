@@ -44,10 +44,10 @@ export default function Tables() {
         {loading ? (
           <Stack align="center">
             <Loader size="lg" />
-            <Text size="sm" color="dimmed">Fetching your tables...</Text>
+            <Text size="sm">Fetching your tables...</Text>
           </Stack>
         ) : error ? (
-          <Text color="red">{error}</Text>
+          <Text>{error}</Text>
         ) : (
           <TablePicker tables={tables} onCreate={handleCreate} />
         )}

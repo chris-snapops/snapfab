@@ -94,7 +94,11 @@ export default function TestingPage() {
           aria-label="Do thing"
           onClick={async () => {
             console.log('Do thing');
-            const colData = await createTable('test03', 'test description', orgId);
+            const colData = await createTable(orgId, {
+              _name: 'test04',
+              _description: 'test description',
+              _archived: false
+            });
             console.log(colData);
           }}
         >
@@ -131,33 +135,33 @@ export default function TestingPage() {
 
         <Grid gutter="md">
           <Grid.Col span={{ base: 12, md: 6 }}>
-            {tables && (
-              <Box mt="md">
-                <Group mb="xs" justify="space-between">
-                  <Title order={4}>Tables ({tables?.length || 0})</Title>
-                  <ActionIcon
-                    variant="subtle"
-                    size="md"
-                    onClick={() => handleCopyJson(tables, 'tables')}
-                    color={copiedTables ? 'green' : 'gray'}
-                    aria-label="Copy JSON data"
-                  >
-                    {copiedTables ? <Check size={18} /> : <Copy size={18} />}
-                  </ActionIcon>
-                </Group>
-                <Code block style={{ whiteSpace: 'pre-wrap' }}>
-                  {JSON.stringify(tables.map((table: any) => {
-                    return {
-                      table_name: table.table_name,
-                      table_id: table.table_id,
-                      org_name: table.org_name,
-                      org_id: table.org_id,
-                      headers: table.headers,
-                    };
-                  }), null, 2)}
-                </Code>
-              </Box>
-            )}
+            <Box mt="md">
+              <Group mb="xs" justify="space-between">
+                <Title order={4}>Tables ({tables?.length || 0})</Title>
+                <ActionIcon
+                  variant="subtle"
+                  size="md"
+                  onClick={() => handleCopyJson(tables, 'tables')}
+                  color={copiedTables ? 'green' : 'gray'}
+                  aria-label="Copy JSON data"
+                >
+                  {copiedTables ? <Check size={18} /> : <Copy size={18} />}
+                </ActionIcon>
+              </Group>
+              <Code block style={{ whiteSpace: 'pre-wrap' }}>
+                {tables ? JSON.stringify(tables.map((table: any) => {
+                  if (table.table_archived) return;
+                  return {
+                    table_name: table.table_name,
+                    table_description: table.table_description,
+                    table_id: table.table_id,
+                    org_name: table.org_name,
+                    org_id: table.org_id,
+                    headers: table.headers,
+                  };
+                }), null, 2) : "Organization not found."}
+              </Code>
+            </Box>
           </Grid.Col>
 
           <Grid.Col span={{ base: 12, md: 6 }}>
@@ -178,7 +182,9 @@ export default function TestingPage() {
                 {cellData ? JSON.stringify({
                   table: {
                     table_name: cellData.table.table_name,
+                    table_description: cellData.table.table_description,
                     table_id: cellData.table.table_id,
+                    table_archived: cellData.table.table_archived,
                     org_name: cellData.table.org_name,
                     org_id: cellData.table.org_id,
                   },
