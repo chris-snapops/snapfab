@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
-import { Box, Flex, Title, Loader, Center } from "@mantine/core";
+import { Box, Flex, Title, Loader, Center, Button } from "@mantine/core";
 import { getCoreRowModel, useReactTable, flexRender } from "@tanstack/react-table";
 import Layout from "../../components/Layout";
 import { getTable } from "../../utils/supabaseUtils";
@@ -9,6 +9,7 @@ import { getTable } from "../../utils/supabaseUtils";
 import StringCell from "../../components/tables/StringCell";
 import EnumCell from "../../components/tables/EnumCell";
 import DateCell from "../../components/tables/DateCell";
+import { Plus } from "lucide-react";
 
 const getCellComponent = (colType: string) => {
   switch (colType) {
@@ -48,13 +49,18 @@ export default function TablePage() {
   }, [id]);
 
   const columns = useMemo(() => {
-    return headers.map((h) => ({
+    // 1. Create a copy and sort based on the position property
+    const sortedHeaders = [...headers].sort((a, b) => (a.position || 0) - (b.position || 0));
+
+    // 2. Map the sorted headers to column definitions
+    return sortedHeaders.map((h) => ({
       accessorKey: h.col_name,
       header: h.col_name.charAt(0).toUpperCase() + h.col_name.slice(1).replace(/_/g, ' '),
       cell: getCellComponent(h.col_type),
       meta: {
         config: h.col_config,
-        isRequired: h.col_is_required
+        isRequired: h.col_is_required,
+        position: h.position // Optional: keep it in meta for reference
       }
     }));
   }, [headers]);
@@ -79,11 +85,12 @@ export default function TablePage() {
         <Title order={1} mb="xl">{tableInfo?.table_name || "Loading..."}</Title>
 
         {loading ? (
-          <Center h={200}><Loader color="blue" /></Center>
+          <Center h={200}><Loader /></Center>
         ) : (
           <Box
             style={{ overflowX: 'auto', borderRadius: 'var(--mantine-radius-md)' }}
             bd="1px solid var(--mantine-color-default-border)"
+            w="100%"
           >
             <style>{`
               .tanstack-tr:hover { background-color: var(--mantine-primary-color-light); }
@@ -91,7 +98,7 @@ export default function TablePage() {
 
             <Flex
               className="tanstack-table"
-              w={table.getTotalSize()}
+              w="100%"
               direction="column"
               bg="var(--mantine-color-body)"
             >
@@ -99,17 +106,33 @@ export default function TablePage() {
                 <Flex
                   className="tanstack-tr-header"
                   key={headerGroup.id}
+                  w="100%"
                   bg="var(--mantine-color-body)"
                   style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
                 >
-                  {headerGroup.headers.map(header => (
+                  <Flex
+                    className="tanstack-th"
+                    align="center"
+                    justify="center"
+                    px="0"
+                    fw={700}
+                    fz={12}
+                    mih={40}
+                    style={{
+                      flex: '0 0 35px',
+                      borderRight: '1px solid var(--mantine-color-default-border)',
+                    }}
+                  >
+                    0
+                  </Flex>
+                  {headerGroup.headers.map((header, index) => (
                     <Flex
                       className="tanstack-th"
                       key={header.id}
                       w={header.getSize()}
                       pos="relative"
                       align="center"
-                      px="12px"
+                      px="8px"
                       py="8px"
                       fw={700}
                       fz={12}
@@ -117,13 +140,14 @@ export default function TablePage() {
                       c="var(--mantine-color-text)"
                       tt="uppercase"
                       style={{
+                        // If it's the last data column, allow it to grow (flex: 1)
+                        flex: index === headerGroup.headers.length - 1 ? '1 1 auto' : '0 0 auto',
                         letterSpacing: '0.05em',
-                        borderRight: '1px solid var(--mantine-color-default-border)'
+                        borderRight: '1px solid var(--mantine-color-default-border)',
                       }}
                     >
                       {flexRender(header.column.columnDef.header, header.getContext())}
 
-                      {/* Added Column Resizer Handle */}
                       <div
                         onMouseDown={header.getResizeHandler()}
                         onTouchStart={header.getResizeHandler()}
@@ -135,6 +159,20 @@ export default function TablePage() {
                       />
                     </Flex>
                   ))}
+                  <Button
+                    variant="subtle"
+                    radius="0"
+                    px="0"
+                    h={40}
+                    onClick={() => {
+                      console.log(`Add column to table ${id}`);
+                    }}
+                    style={{
+                      flex: '0 0 35px',
+                    }}
+                  >
+                    <Plus size={16} />
+                  </Button>
                 </Flex>
               ))}
 
@@ -142,23 +180,60 @@ export default function TablePage() {
                 <Flex
                   className="tanstack-tr"
                   key={row.id}
+                  w="100%"
                   style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
                 >
-                  {row.getVisibleCells().map(cell => (
+                  <Flex
+                    className="tanstack-th"
+                    align="center"
+                    justify="center"
+                    px="0"
+                    fw={700}
+                    fz={12}
+                    mih={40}
+                    style={{
+                      flex: '0 0 35px',
+                      borderRight: '1px solid var(--mantine-color-default-border)',
+                    }}
+                  >
+                    {row.index + 1}
+                  </Flex>
+                  {row.getVisibleCells().map((cell, index) => (
                     <Flex
                       className="tanstack-td"
                       key={cell.id}
                       w={cell.column.getSize()}
                       align="center"
-                      style={{ borderRight: '1px solid var(--mantine-color-default-border)' }}
-                      mih={40}
+                      style={{
+                        // If it's the last data column, allow it to grow (flex: 1)
+                        flex: index === row.getVisibleCells().length - 1 ? '1 1 auto' : '0 0 auto',
+                        borderRight: '1px solid var(--mantine-color-default-border)',
+                      }}
                       fz={14}
+                      mih={40}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </Flex>
                   ))}
+                  <Flex style={{ flex: '0 0 35px' }} />
                 </Flex>
               ))}
+              <Flex>
+                <Button
+                  variant="subtle"
+                  radius="0"
+                  px="0"
+                  onClick={() => {
+                    console.log(`Add row to table ${id}`);
+                  }}
+                  style={{
+                    flex: '0 0 35px',
+                    borderRight: '1px solid var(--mantine-color-default-border)'
+                  }}
+                >
+                  <Plus size={16} />
+                </Button>
+              </Flex>
             </Flex>
           </Box>
         )}
