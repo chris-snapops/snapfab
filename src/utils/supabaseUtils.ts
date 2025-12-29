@@ -220,9 +220,11 @@ export const archiveColumn = async (colId: string) => {
 export const deleteRows = async (rowIds: string[]) => {
   await waitForSession();
 
+  console.log("Deleting rows", rowIds);
   const { data: rpcData, error } = await supabase.rpc('delete_app_rows', {
     _row_ids: rowIds,
   });
+  console.log(JSON.stringify(rpcData, null, 2));
 
   if (error) throw error;
   return rpcData;

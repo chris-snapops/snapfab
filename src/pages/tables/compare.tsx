@@ -2,9 +2,14 @@ import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import { Box, Flex, Title, Loader, Center, Button, Checkbox } from "@mantine/core";
 import { Plus } from "lucide-react";
-import { getCoreRowModel, useReactTable, flexRender, RowSelectionState } from "@tanstack/react-table";
+import { 
+  getCoreRowModel, 
+  useReactTable, 
+  flexRender, 
+  RowSelectionState 
+} from "@tanstack/react-table";
 import Layout from "../../components/Layout";
-import { getTable, createColumn, createRow, deleteRows } from "../../utils/supabaseUtils";
+import { getTable, createRow, deleteRows } from "../../utils/supabaseUtils";
 
 // Cell Components
 import StringCell from "../../components/tables/StringCell";
@@ -28,6 +33,7 @@ export default function TablePage() {
   const [headers, setHeaders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [columnOrder, setColumnOrder] = useState<string[]>([]);
+  // 1. Add Row Selection State
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const fetchData = async () => {
@@ -43,6 +49,7 @@ export default function TablePage() {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     if (!id) return;
     fetchData();
@@ -50,8 +57,9 @@ export default function TablePage() {
 
   useEffect(() => {
     if (headers.length > 0) {
+      // Ensure 'select' is always the first item in the column order
       const initialOrder = [
-        'select',
+        'select', 
         ...([...headers]
           .sort((a, b) => (a.col_position || 0) - (b.col_position || 0))
           .map(h => h.col_id))
@@ -67,7 +75,6 @@ export default function TablePage() {
       accessorKey: h.col_id,
       header: h.col_name.charAt(0).toUpperCase() + h.col_name.slice(1).replace(/_/g, ' '),
       cell: getCellComponent(h.col_type),
-      minSize: 120,
       size: 150,
       meta: {
         config: h.col_config,
@@ -79,7 +86,7 @@ export default function TablePage() {
     return [
       {
         id: 'select',
-        size: 35,
+        size: 40,
         enableResizing: false, // Prevent resizing
         header: ({ table }: any) => (
           <Center w="100%">
@@ -87,8 +94,6 @@ export default function TablePage() {
               checked={table.getIsAllPageRowsSelected()}
               indeterminate={table.getIsSomePageRowsSelected()}
               onChange={table.getToggleAllPageRowsSelectedHandler()}
-              size="xs"
-              radius="sm"
               styles={{ input: { cursor: 'pointer' } }}
             />
           </Center>
@@ -100,9 +105,6 @@ export default function TablePage() {
               disabled={!row.getCanSelect()}
               indeterminate={row.getIsSomeSelected()}
               onChange={row.getToggleSelectedHandler()}
-              onClick={(e) => e.stopPropagation()}
-              size="xs"
-              radius="sm"
               styles={{ input: { cursor: 'pointer' } }}
             />
           </Center>
@@ -112,45 +114,6 @@ export default function TablePage() {
     ];
   }, [headers]);
 
-  const handleSaveOrder = async () => {
-    try {
-      // Map the current string order to objects for Supabase
-      const updates = columnOrder.map((colId, index) => ({
-        col_id: colId,
-        col_position: index, // New position based on array index
-      }));
-
-      // TODO in supabaseUtils
-      // await updateColumnPositions(id, updates); 
-
-      console.log("Saved new order:", updates);
-    } catch (error) {
-      console.error("Failed to save column order", error);
-    }
-  };
-
-  const handleAddColumn = async () => {
-    // await createColumn(id as string, {
-    //   _name: "",
-    //   _data_type: "",
-    //   _config: "",
-    //   _is_required: false,
-    // });
-  }
-
-
-  const handleAddRow = async () => {
-    console.log("Adding row");
-    await createRow(id as string);
-    fetchData();
-  }
-
-  const handleDeleteRows = async (rowIds: string[]) => {
-    await deleteRows(rowIds);
-    setRowSelection({})
-    fetchData();
-  }
-
   const table = useReactTable({
     data,
     columns,
@@ -158,7 +121,7 @@ export default function TablePage() {
       columnOrder,
       rowSelection,
     },
-    enableRowSelection: true,
+    enableRowSelection: true, // This enables shift-click selection by default
     onRowSelectionChange: setRowSelection,
     onColumnOrderChange: setColumnOrder,
     getCoreRowModel: getCoreRowModel(),
@@ -178,7 +141,7 @@ export default function TablePage() {
           <Title order={1}>{tableInfo?.table_name || "Loading..."}</Title>
           {Object.keys(rowSelection).length > 0 && (
             <Button color="red" variant="light" onClick={() => {
-              const selectedIds = table.getSelectedRowModel().rows.map(r => r.original.row_id);
+              const selectedIds = table.getSelectedRowModel().rows.map(r => r.original.id);
               handleDeleteRows(selectedIds);
             }}>
               Delete Selected ({Object.keys(rowSelection).length})
@@ -194,16 +157,7 @@ export default function TablePage() {
             bd="1px solid var(--mantine-color-default-border)"
             w="100%"
           >
-            <style>{`
-              .tanstack-tr:hover { background-color: var(--mantine-primary-color-light); }
-            `}</style>
-
-            <Flex
-              className="tanstack-table"
-              w="100%"
-              direction="column"
-              bg="var(--mantine-color-body)"
-            >
+            <Flex className="tanstack-table" w="100%" direction="column" bg="var(--mantine-color-body)">
               {table.getHeaderGroups().map(headerGroup => (
                 <Flex
                   className="tanstack-tr-header"
@@ -226,16 +180,12 @@ export default function TablePage() {
                         fw={700}
                         fz={12}
                         h={40}
-                        c="var(--mantine-color-text)"
-                        tt="uppercase"
                         style={{
-                          // If it's the last data column, allow it to grow (flex: 1)
                           flex: index === headerGroup.headers.length - 1 ? '1 1 auto' : '0 0 auto',
-                          letterSpacing: '0.05em',
                           borderRight: '1px solid var(--mantine-color-default-border)',
                         }}
                       >
-                        {/* Simple Move Left Button TODO make drag and drop */}
+                        {/* Only show move buttons for non-selection columns, and don't allow moving into index 0 */}
                         {!isSelect && index > 1 && (
                           <Button
                             variant="subtle"
@@ -245,15 +195,14 @@ export default function TablePage() {
                               const [movedColumn] = newOrder.splice(index, 1);
                               newOrder.splice(index - 1, 0, movedColumn);
                               setColumnOrder(newOrder);
-                              handleSaveOrder();
                             }}
                           >
                             ←
                           </Button>
                         )}
-
+                        
                         {flexRender(header.column.columnDef.header, header.getContext())}
-
+                        
                         {/* Only show resizer if column is resizable */}
                         {header.column.getCanResize() && (
                           <div
@@ -269,20 +218,6 @@ export default function TablePage() {
                       </Flex>
                     );
                   })}
-                  <Button
-                    variant="subtle"
-                    radius="0"
-                    px="0"
-                    h={40}
-                    onClick={() => {
-                      console.log(`Add column to table ${id}`);
-                    }}
-                    style={{
-                      flex: '0 0 35px',
-                    }}
-                  >
-                    <Plus size={16} />
-                  </Button>
                 </Flex>
               ))}
 
@@ -291,6 +226,7 @@ export default function TablePage() {
                   className="tanstack-tr"
                   key={row.id}
                   w="100%"
+                  bg={row.getIsSelected() ? 'var(--mantine-color-blue-light)' : 'transparent'}
                   style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
                 >
                   {row.getVisibleCells().map((cell, index) => (
@@ -300,33 +236,16 @@ export default function TablePage() {
                       w={cell.column.getSize()}
                       align="center"
                       style={{
-                        // If it's the last data column, allow it to grow (flex: 1)
                         flex: index === row.getVisibleCells().length - 1 ? '1 1 auto' : '0 0 auto',
                         borderRight: '1px solid var(--mantine-color-default-border)',
                       }}
-                      fz={14}
                       mih={40}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </Flex>
                   ))}
-                  <Flex style={{ flex: '0 0 35px' }} />
                 </Flex>
               ))}
-              <Flex>
-                <Button
-                  variant="subtle"
-                  radius="0"
-                  px="0"
-                  onClick={handleAddRow}
-                  style={{
-                    flex: '0 0 35px',
-                    borderRight: '1px solid var(--mantine-color-default-border)'
-                  }}
-                >
-                  <Plus size={16} />
-                </Button>
-              </Flex>
             </Flex>
           </Box>
         )}
