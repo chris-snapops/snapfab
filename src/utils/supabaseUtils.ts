@@ -217,10 +217,10 @@ export const archiveColumn = async (colId: string) => {
   return rpcData;
 };
 
-export const archiveRows = async (rowIds: string[]) => {
+export const deleteRows = async (rowIds: string[]) => {
   await waitForSession();
 
-  const { data: rpcData, error } = await supabase.rpc('archive_app_rows', {
+  const { data: rpcData, error } = await supabase.rpc('delete_app_rows', {
     _row_ids: rowIds,
   });
 

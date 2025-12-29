@@ -11,7 +11,7 @@ const StringCell = ({ getValue, row, column, table }: any) => {
 
   return (
     <TextInput
-      value={value}
+      value={value || ''}
       onChange={(e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
       variant="filled"
       p="4px 8px"

@@ -1,15 +1,15 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/router";
-import { Box, Flex, Title, Loader, Center, Button } from "@mantine/core";
-import { getCoreRowModel, useReactTable, flexRender } from "@tanstack/react-table";
+import { Box, Flex, Title, Loader, Center, Button, Checkbox } from "@mantine/core";
+import { Plus } from "lucide-react";
+import { getCoreRowModel, useReactTable, flexRender, RowSelectionState } from "@tanstack/react-table";
 import Layout from "../../components/Layout";
-import { getTable } from "../../utils/supabaseUtils";
+import { getTable, createColumn, createRow, deleteRows } from "../../utils/supabaseUtils";
 
 // Cell Components
 import StringCell from "../../components/tables/StringCell";
 import EnumCell from "../../components/tables/EnumCell";
 import DateCell from "../../components/tables/DateCell";
-import { Plus } from "lucide-react";
 
 const getCellComponent = (colType: string) => {
   switch (colType) {
@@ -27,48 +27,100 @@ export default function TablePage() {
   const [data, setData] = useState<any[]>([]);
   const [headers, setHeaders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [columnOrder, setColumnOrder] = useState<string[]>([]);
 
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const result = await getTable(id as string);
+      setData(result.data);
+      setHeaders(result.headers);
+      setTableInfo(result.table);
+    } catch (error) {
+      console.error("Error fetching table:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     if (!id) return;
-
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const result = await getTable(id as string);
-        setData(result.data);
-        setHeaders(result.headers);
-        setTableInfo(result.table);
-      } catch (error) {
-        console.error("Error fetching table:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, [id]);
 
+  useEffect(() => {
+    if (headers.length > 0) {
+      const initialOrder = [...headers]
+        .sort((a, b) => (a.col_position || 0) - (b.col_position || 0))
+        .map(h => h.col_id);
+      setColumnOrder(initialOrder);
+    }
+  }, [headers]);
+
   const columns = useMemo(() => {
     // 1. Create a copy and sort based on the position property
-    const sortedHeaders = [...headers].sort((a, b) => (a.position || 0) - (b.position || 0));
+    const sortedHeaders = [...headers].sort((a, b) => a.col_position - b.col_position);
 
     // 2. Map the sorted headers to column definitions
     return sortedHeaders.map((h) => ({
-      accessorKey: h.col_name,
+      accessorKey: h.col_id,
       header: h.col_name.charAt(0).toUpperCase() + h.col_name.slice(1).replace(/_/g, ' '),
       cell: getCellComponent(h.col_type),
       meta: {
         config: h.col_config,
         isRequired: h.col_is_required,
-        position: h.position // Optional: keep it in meta for reference
+        col_position: h.col_position // Optional: keep it in meta for reference
       }
     }));
   }, [headers]);
+
+  const handleSaveOrder = async () => {
+    try {
+      // Map the current string order to objects for Supabase
+      const updates = columnOrder.map((colId, index) => ({
+        col_id: colId,
+        col_position: index, // New position based on array index
+      }));
+
+      // TODO in supabaseUtils
+      // await updateColumnPositions(id, updates); 
+
+      console.log("Saved new order:", updates);
+    } catch (error) {
+      console.error("Failed to save column order", error);
+    }
+  };
+
+  const handleAddColumn = async () => {
+    // await createColumn(id as string, {
+    //   _name: "",
+    //   _data_type: "",
+    //   _config: "",
+    //   _is_required: false,
+    // });
+  }
+
+
+  const handleAddRow = async () => {
+    console.log("Adding row");
+    await createRow(id as string);
+    fetchData();
+  }
+
+  const handleDeleteRows = async (rowIds: string[]) => {
+    console.log("Deleting rows");
+    await deleteRows(rowIds);
+    fetchData();
+  }
 
   const table = useReactTable({
     data,
     columns,
     defaultColumn: { minSize: 150 },
+    state: {
+      columnOrder,
+    },
+    onColumnOrderChange: setColumnOrder,
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: "onChange",
     meta: {
@@ -146,8 +198,23 @@ export default function TablePage() {
                         borderRight: '1px solid var(--mantine-color-default-border)',
                       }}
                     >
+                      {/* Simple Move Left Button TODO make drag and drop */}
+                      {index > 0 && (
+                        <Button
+                          variant="subtle"
+                          size="compact-xs"
+                          onClick={() => {
+                            const newOrder = [...columnOrder];
+                            const [movedColumn] = newOrder.splice(index, 1);
+                            newOrder.splice(index - 1, 0, movedColumn);
+                            setColumnOrder(newOrder);
+                            handleSaveOrder();
+                          }}
+                        >
+                          ←
+                        </Button>
+                      )}
                       {flexRender(header.column.columnDef.header, header.getContext())}
-
                       <div
                         onMouseDown={header.getResizeHandler()}
                         onTouchStart={header.getResizeHandler()}
@@ -223,9 +290,7 @@ export default function TablePage() {
                   variant="subtle"
                   radius="0"
                   px="0"
-                  onClick={() => {
-                    console.log(`Add row to table ${id}`);
-                  }}
+                  onClick={handleAddRow}
                   style={{
                     flex: '0 0 35px',
                     borderRight: '1px solid var(--mantine-color-default-border)'
