@@ -1,8 +1,8 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import { Box, Flex, Title, Loader, Center, Button, Checkbox } from "@mantine/core";
 import { Plus } from "lucide-react";
-import { getCoreRowModel, useReactTable, flexRender, RowSelectionState } from "@tanstack/react-table";
+import { getCoreRowModel, useReactTable, flexRender,  } from "@tanstack/react-table";
 import Layout from "../../components/Layout";
 import { getTable, createColumn, createRow, deleteRows } from "../../utils/supabaseUtils";
 
@@ -162,21 +162,6 @@ export default function TablePage() {
                   bg="var(--mantine-color-body)"
                   style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
                 >
-                  <Flex
-                    className="tanstack-th"
-                    align="center"
-                    justify="center"
-                    px="0"
-                    fw={700}
-                    fz={12}
-                    mih={40}
-                    style={{
-                      flex: '0 0 35px',
-                      borderRight: '1px solid var(--mantine-color-default-border)',
-                    }}
-                  >
-                    0
-                  </Flex>
                   {headerGroup.headers.map((header, index) => (
                     <Flex
                       className="tanstack-th"
@@ -250,21 +235,6 @@ export default function TablePage() {
                   w="100%"
                   style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
                 >
-                  <Flex
-                    className="tanstack-th"
-                    align="center"
-                    justify="center"
-                    px="0"
-                    fw={700}
-                    fz={12}
-                    mih={40}
-                    style={{
-                      flex: '0 0 35px',
-                      borderRight: '1px solid var(--mantine-color-default-border)',
-                    }}
-                  >
-                    {row.index + 1}
-                  </Flex>
                   {row.getVisibleCells().map((cell, index) => (
                     <Flex
                       className="tanstack-td"
