@@ -2,9 +2,9 @@ import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
 import { Box, Flex, Title, Loader, Center, Button, Checkbox } from "@mantine/core";
 import { Plus } from "lucide-react";
-import { getCoreRowModel, useReactTable, flexRender, RowSelectionState } from "@tanstack/react-table";
+import { getCoreRowModel, useReactTable, flexRender, RowSelectionState, RowData } from "@tanstack/react-table";
 import Layout from "../../components/Layout";
-import { getTable, createColumn, createRow, deleteRows } from "../../utils/supabaseUtils";
+import { getTable, createColumn, createRow, deleteRows, updateCells, CellDataTypes } from "../../utils/supabaseUtils";
 
 // Cell Components
 import StringCell from "../../components/tables/StringCell";
@@ -18,6 +18,14 @@ const getCellComponent = (colType: string) => {
     default: return StringCell;
   }
 };
+
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    colDataType?: CellDataTypes;
+    config?: any;
+    isRequired?: boolean | null;
+  }
+}
 
 export default function TablePage() {
   const router = useRouter();
@@ -60,6 +68,22 @@ export default function TablePage() {
     }
   }, [headers]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        const isTyping = ["INPUT", "TEXTAREA", "SELECT"].includes(
+          (document.activeElement as HTMLElement)?.tagName
+        );
+
+        if (!isTyping) setRowSelection({});
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const columns = useMemo(() => {
     const sortedHeaders = [...headers].sort((a, b) => a.col_position - b.col_position);
 
@@ -72,6 +96,7 @@ export default function TablePage() {
       meta: {
         config: h.col_config,
         isRequired: h.col_is_required,
+        colDataType: h.col_type,
       }
     }));
 
@@ -151,6 +176,27 @@ export default function TablePage() {
     fetchData();
   }
 
+  const handleUpdateCell = async (e: any, colDataType: string, colId: string, rowId: string) => {
+    console.log("Updating cell");
+    console.log(colId);
+    console.log(rowId);
+    console.log(colDataType);
+    console.log(e.target.value);
+
+    let data_type = "_value_text";
+    switch (colDataType) {
+      case "text": data_type = "_value_text"; break;
+      case "enum_single": data_type = "_value_text"; break;
+      case "enum_multi": data_type = "_value_text"; break;
+      case "number": data_type = "_value_number"; break;
+      case "boolean": data_type = "_value_boolean"; break;
+      case "date": data_type = "_value_date"; break;
+      case "json": data_type = "_value_json"; break;
+    }
+    await updateCells([{ _col_id: colId, _row_id: rowId, _data_type: data_type as CellDataTypes, _value: e.target.value }]);
+    fetchData();
+  }
+
   const table = useReactTable({
     data,
     columns,
@@ -179,7 +225,7 @@ export default function TablePage() {
           {Object.keys(rowSelection).length > 0 && (
             <Button color="red" variant="light" onClick={() => {
               const selectedIds = table.getSelectedRowModel().rows.map(r => r.original.row_id);
-              handleDeleteRows(selectedIds);
+              handleDeleteRows(selectedIds as string[]);
             }}>
               Delete Selected ({Object.keys(rowSelection).length})
             </Button>
@@ -299,6 +345,7 @@ export default function TablePage() {
                       key={cell.id}
                       w={cell.column.getSize()}
                       align="center"
+                      onBlur={(e) => handleUpdateCell(e, cell.column.columnDef.meta?.colDataType || "_value_text", cell.column.id, row.original.row_id)}
                       style={{
                         // If it's the last data column, allow it to grow (flex: 1)
                         flex: index === row.getVisibleCells().length - 1 ? '1 1 auto' : '0 0 auto',

@@ -153,19 +153,44 @@ export const updateTable = async (tableId: string, tableData: TableData) => {
 * Archive Rows
 */
 
+
+export type CellDataTypes = '_value_text' | '_value_number' | '_value_boolean' | '_value_date' | '_value_json';
+
+type CellData = {
+  _col_id: string;
+  _row_id: string;
+} & (
+    | { _data_type: '_value_text'; _value: string }
+    | { _data_type: '_value_number'; _value: number }
+    | { _data_type: '_value_boolean'; _value: boolean }
+    | { _data_type: '_value_date'; _value: Date | string }
+    | { _data_type: '_value_json'; _value: Record<string, any> | any[] }
+  );
+
+export const updateCells = async (cellData: CellData[]) => {
+  await waitForSession();
+  const payload = cellData.map((cell) => {
+    return {
+      _col_id: cell._col_id,
+      _row_id: cell._row_id,
+      [cell._data_type]: cell._value
+    };
+  });
+  console.log("Updating cells", JSON.stringify(payload, null, 2));
+  const { data, error } = await supabase.rpc('update_app_cells', {
+    _cell_data: payload,
+  });
+
+  if (error) throw error;
+  return data;
+};
+
 type ColumnData = {
   _name: string;
-  _data_type: keyof CellValue;
+  _data_type: CellDataTypes;
   _config: string;
   _is_required: boolean;
 }
-
-type CellValue =
-  | { _value_text: string }
-  | { _value_number: number }
-  | { _value_boolean: boolean }
-  | { _value_date: Date | string }
-  | { _value_json: any };
 
 export const createColumn = async (tableId: string, columnData: ColumnData) => {
   await waitForSession();
@@ -193,18 +218,6 @@ export const createRow = async (tableId: string) => {
   return rpcData;
 };
 
-export const upsertCell = async (colId: string, rowId: string, value: CellValue) => {
-  await waitForSession();
-
-  const { data, error } = await supabase.rpc('upsert_app_cell', {
-    _col_id: colId,
-    _row_id: rowId,
-    ...value,
-  });
-
-  if (error) throw error;
-  return data;
-};
 
 export const archiveColumn = async (colId: string) => {
   await waitForSession();
