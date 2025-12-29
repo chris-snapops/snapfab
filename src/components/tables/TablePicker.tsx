@@ -7,6 +7,7 @@ interface TablePickerProps {
   tables: {
     table_name: string;
     table_id: string;
+    table_description: string;
     href: string;
   }[];
   loading: boolean;
@@ -39,10 +40,7 @@ const TablePicker: React.FC<TablePickerProps> = ({ tables, loading, error, orgId
         }}
       >
         <Group justify="space-between" wrap="nowrap">
-          <Box flex={1}>
-            <Title order={4} mb={4}>Data Tables</Title>
-            <Text size="xs" c="dimmed">Select a table to view and manage your data</Text>
-          </Box>
+          <Title order={4} mb={4}>Data Tables</Title>
           <Button
             onClick={onCreate}
             leftSection={<Plus size={16} />}
@@ -100,9 +98,12 @@ const TablePicker: React.FC<TablePickerProps> = ({ tables, loading, error, orgId
                 <ThemeIcon variant="light" size="md" radius="md">
                   <TableIcon size={16} />
                 </ThemeIcon>
-                <Box flex={1}>
+                <Box flex={1} >
                   <Text size="sm" fw={600}>
                     {table.table_name}
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    {table.table_description}
                   </Text>
                 </Box>
                 <ArrowRight size={16} color="var(--mantine-color-dimmed)" />

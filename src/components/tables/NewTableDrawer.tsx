@@ -1,26 +1,53 @@
 import React, { useEffect, useState } from "react";
-import { Drawer, Button, TextInput, Textarea, Select, Stack, Title, Text, Divider, LoadingOverlay, Box, Group } from "@mantine/core";
+import { Drawer, Button, TextInput, Textarea, Stack, Title, Text, Box, Group, Loader } from "@mantine/core";
+import { listTables } from "../../utils/supabaseUtils";
 
 interface NewTableDrawerProps {
   opened: boolean;
   onClose: () => void;
   onSubmit: (data: { name: string; description: string; orgId: string }) => void;
-  orgId: string; // Passed down from your settings/app state
+  orgId: string;
 }
 
 const NewTableDrawer: React.FC<NewTableDrawerProps> = ({ opened, onClose, onSubmit, orgId }) => {
-
   // Form State
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
+  // Validation & Data State
+  const [existingTables, setExistingTables] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch tables when the drawer is opened
+  useEffect(() => {
+    const fetchExistingTables = async () => {
+      if (opened) {
+        setLoading(true);
+        try {
+          const tables = await listTables(orgId, false);
+          setExistingTables(tables?.map((t: any) => t.table_name.toLowerCase()) || []);
+        } catch (error) {
+          console.error("Failed to fetch tables:", error);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        // Reset state when drawer closes
+        setName("");
+        setDescription("");
+      }
+    };
+
+    fetchExistingTables();
+  }, [opened]);
+
+  // Logic to check for duplicates
+  const isDuplicate = existingTables.includes(name.trim().toLowerCase());
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name && orgId) {
+    if (name && orgId && !isDuplicate) {
       onSubmit({ name, description, orgId });
-      // Clear form and close
-      setName("");
-      setDescription("");
       onClose();
     }
   };
@@ -37,19 +64,8 @@ const NewTableDrawer: React.FC<NewTableDrawerProps> = ({ opened, onClose, onSubm
           <Text size="xs" c="dimmed">Define your table structure and ownership</Text>
         </Stack>
       }
-      styles={{
-        header: {
-          borderBottom: '1px solid var(--mantine-color-default-border)',
-          paddingBottom: 'var(--mantine-spacing-md)',
-          marginBottom: 'var(--mantine-spacing-md)',
-        },
-        content: {
-          display: 'flex',
-          flexDirection: 'column'
-        }
-      }}
     >
-      <Box pos="relative" style={{ flex: 1 }}>
+      <Box pos="relative">
         <form onSubmit={handleSubmit}>
           <Stack gap="md">
             <TextInput
@@ -58,6 +74,7 @@ const NewTableDrawer: React.FC<NewTableDrawerProps> = ({ opened, onClose, onSubm
               required
               value={name}
               onChange={(e) => setName(e.currentTarget.value)}
+              error={isDuplicate ? "A table with this name already exists" : null}
             />
 
             <Textarea
@@ -72,14 +89,18 @@ const NewTableDrawer: React.FC<NewTableDrawerProps> = ({ opened, onClose, onSubm
               <Button variant="subtle" onClick={onClose} color="gray">
                 Cancel
               </Button>
-              <Button type="submit" radius="md">
+              <Button
+                type="submit"
+                radius="md"
+                disabled={isDuplicate || !name || loading}
+              >
                 Create Table
               </Button>
             </Group>
           </Stack>
         </form>
       </Box>
-    </Drawer>
+    </Drawer >
   );
 };
 
